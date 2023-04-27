@@ -1,0 +1,19 @@
+-cp src
+-dce full
+-D js-es=6
+-D analyzer-optimize
+-D old-error-format
+
+-lib chrome-extension-v3
+-lib no-vdom
+--macro exclude('haxe.iterators.ArrayIterator')
+
+--each
+-D js-global=globalThis
+-main Background
+-js build/js/background.js
+
+--next
+-D js-global=window
+-main ContentScript
+-js build/js/content-script.js

@@ -1,0 +1,31 @@
+{
+	"name": "__MSG_APP_NAME__",
+	"version": "0.1",
+	"manifest_version": 3,
+	"default_locale": "zh_CN",
+	"description": "__MSG_DESCRIPTION__",
+
+	"minimum_chrome_version": "88",
+
+	"icons": {
+		"128": "images/icons/128.png"
+	},
+
+	"background": {
+		"service_worker": "js/background.js"
+	},
+
+	"action": {
+		"default_icon": "images/icons/128.png",
+		"default_title": "__MSG_APP_NAME__"
+	},
+
+	"permissions": [
+		"tabs",
+		"scripting",
+		"webNavigation"
+	],
+	"host_permissions": [
+		"<all_urls>"
+	]
+}

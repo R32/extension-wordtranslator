@@ -1,0 +1,3 @@
+*.hss linguist-language=CSS
+*.css linguist-vendored
+*.js linguist-vendored

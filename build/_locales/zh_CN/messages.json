@@ -1,0 +1,8 @@
+{
+	"APP_NAME": {
+		"message": "羊毛单词"
+	},
+	"DESCRIPTION": {
+		"message": "薅微软必应翻译的羊毛，双击或选择单词或者短句后，点击弹出的按钮将文本发送至 https://cn.bing.com/translator 处理"
+	}
+}
