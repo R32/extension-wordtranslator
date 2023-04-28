@@ -63,7 +63,14 @@ class Background {
 			return lazySendResponse != null;
 		});
 		chrome.webNavigation.onDOMContentLoaded.addListener(function(t) {
-			if(t.url.charAt(6) == ":") {
+			let dot = t.url.indexOf(":");
+			if(dot == -1) {
+				return;
+			}
+			switch(t.url.substring(0,dot)) {
+			case "file":case "http":case "https":
+				break;
+			default:
 				return;
 			}
 			chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : ["js/content-script.js"]});

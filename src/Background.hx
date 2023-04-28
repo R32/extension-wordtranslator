@@ -80,8 +80,14 @@ class Background {
 		});
 
 		chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {
-			if (t.url.charAt(6) == ":")// if (t.url.includes("chrome://"))
+			var dot = t.url.indexOf(":");
+			if (dot == -1)
 				return;
+			switch(t.url.substring(0, dot)) {
+			case "http", "https" , "file":
+			default:
+				return;
+			}
 			chrome.Scripting.executeScript({
 				target : {tabId: t.tabId},
 				files : ["js/content-script.js"]
