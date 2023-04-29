@@ -9,12 +9,11 @@ class ContentScript {
 		if(button != null) {
 			return;
 		}
-		document.onpointerup = ContentScript.mouseup;
 		let node = document.createElement("div");
 		node.id = "bing_trans_btn";
 		node.innerText = "翻译";
 		button = node;
-		button.style.cssText = "\r\n\t\t\tposition : absolute;\r\n\t\t\tpadding : 2px 4px;\r\n\t\t\tmargin : 0;\r\n\t\t\tdisplay : none;\r\n\t\t\tborder : 1px solid #00bcd4;\r\n\t\t\tborder-left-width : 12pt;\r\n\t\t\tbackground-color : inherit;\r\n\t\t\tfont-size : 10pt;\r\n\t\t\tcursor : pointer;\r\n\t\t\tcolor : inherit;\r\n\t\t\tz-index : 100;\r\n\t\t";
+		button.style.cssText = "\r\n\t\t\tposition : absolute;\r\n\t\t\tpadding : 2px 4px;\r\n\t\t\tmargin : 0;\r\n\t\t\tdisplay : none;\r\n\t\t\tborder : 1px solid #00bcd4;\r\n\t\t\tborder-left-width : 12pt;\r\n\t\t\tbackground-color : inherit;\r\n\t\t\tfont-size : 10pt;\r\n\t\t\tcursor : pointer;\r\n\t\t\tcolor : inherit;\r\n\t\t\tz-index : 101;\r\n\t\t";
 		button.onclick = function(e) {
 			e.stopPropagation();
 			if(e.layerX < devicePixelRatio * 16) {
@@ -22,7 +21,7 @@ class ContentScript {
 			}
 			if(ContentScript.srange != null) {
 				let sel = document.getSelection();
-				if(sel.anchorNode.parentNode == button && !sel.isCollapsed) {
+				if(!sel.isCollapsed && sel.anchorNode.parentNode == button) {
 					return;
 				}
 				sel.removeAllRanges();
@@ -32,7 +31,7 @@ class ContentScript {
 		};
 		button.oncontextmenu = function(e) {
 			let sel = document.getSelection();
-			if(sel.anchorNode.parentNode == button && !sel.isCollapsed) {
+			if(!sel.isCollapsed && sel.anchorNode.parentNode == button) {
 				return;
 			}
 			ContentScript.halt(e);
@@ -50,6 +49,27 @@ class ContentScript {
 			document.addEventListener("mousemove",ContentScript.onmove,true);
 			button.style.cursor = "move";
 		};
+		document.onpointerup = function(e) {
+			if(document.onselectstart != null) {
+				document.onselectstart = null;
+				document.removeEventListener("mousemove",ContentScript.onmove,true);
+				button.style.cursor = "pointer";
+				return;
+			}
+			let sel = document.getSelection();
+			if(sel.isCollapsed || sel.anchorNode.parentNode == button) {
+				return;
+			}
+			let value = sel.toString();
+			if(ContentScript.query.value == value || value.length < 2) {
+				return;
+			}
+			button.style.display = "inline-block";
+			button.style.left = e.pageX + "px";
+			button.style.top = Math.max(e.pageY - 50,0) + "px";
+			ContentScript.query.value = value;
+			ContentScript.srange = sel.getRangeAt(0);
+		};
 		document.body.appendChild(button);
 		ContentScript.button = button;
 	}
@@ -66,28 +86,6 @@ class ContentScript {
 	static halt(e) {
 		e.preventDefault();
 		e.stopPropagation();
-	}
-	static mouseup(e) {
-		let button = ContentScript.button;
-		if(document.onselectstart != null) {
-			document.onselectstart = null;
-			document.removeEventListener("mousemove",ContentScript.onmove,true);
-			button.style.cursor = "pointer";
-			return;
-		}
-		let sel = document.getSelection();
-		if(sel.isCollapsed || sel.anchorNode.parentNode == button) {
-			return;
-		}
-		let value = sel.toString();
-		if(ContentScript.query.value == value || value.length < 2) {
-			return;
-		}
-		button.style.display = "inline-block";
-		button.style.left = e.pageX + "px";
-		button.style.top = Math.max(e.pageY - 50,0) + "px";
-		ContentScript.query.value = value;
-		ContentScript.srange = sel.getRangeAt(0);
 	}
 }
 class Std {

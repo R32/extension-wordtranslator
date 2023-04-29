@@ -17,7 +17,6 @@ class ContentScript {
 		var button = document.getElementById(id);
 		if (button != null)
 			return;
-		document.onpointerup = mouseup;
 		button = HXX( <div id="{{ id }}">翻译</div> ); // TODO: a random word from localStorage wordlist
 		button.style.cssText = "
 			position : absolute;
@@ -30,15 +29,17 @@ class ContentScript {
 			font-size : 10pt;
 			cursor : pointer;
 			color : inherit;
-			z-index : 100;
+			z-index : 101;
 		";
+		inline function onitself( sel : js.html.Selection ) return sel.anchorNode.parentNode == button;
+
 		button.onclick = function( e : PointerEvent ) {
 			e.stopPropagation();
 			if (headerhit(e))
 				return;
 			if (srange != null) {
 				var sel = document.getSelection();
-				if (sel.anchorNode.parentNode == button && !sel.isCollapsed)
+				if (!sel.isCollapsed && onitself(sel))
 					return;
 				sel.removeAllRanges();
 				sel.addRange(srange);
@@ -47,7 +48,7 @@ class ContentScript {
 		}
 		button.oncontextmenu = function( e : MouseEvent ) {
 			var sel = document.getSelection();
-			if (sel.anchorNode.parentNode == button && !sel.isCollapsed)
+			if (!sel.isCollapsed && onitself(sel)) // if you want to copy the result
 				return;
 			halt(e);
 			display(button) = CSS_NONE;
@@ -63,6 +64,25 @@ class ContentScript {
 			document.removeEventListener("mousemove", onmove, true);
 			document.addEventListener("mousemove", onmove, true);
 			button.style.cursor = "move";
+		};
+		document.onpointerup = function( e : PointerEvent ) {
+			if (document.onselectstart != null) {
+				document.onselectstart  = null;
+				document.removeEventListener("mousemove", onmove, true);
+				button.style.cursor = "pointer";
+				return;
+			}
+			var sel = document.getSelection();
+			if (sel.isCollapsed || onitself(sel))
+				return;
+			var value = (sel : Dynamic).toString(); // no toString?
+			if (query.value == value || value.length < 2)
+				return;
+			display(button) = CSS_INLINE_BLOCK;
+			button.style.left = e.pageX + "px";
+			button.style.top = Math.max(e.pageY - 50, 0) + "px";
+			query.value = value;
+			srange = sel.getRangeAt(0);
 		};
 		document.body.appendChild(button);
 		ContentScript.button = button;
@@ -85,26 +105,5 @@ class ContentScript {
 	static function halt( e : Event ) {
 		e.preventDefault();
 		e.stopPropagation();
-	}
-
-	static function mouseup( e : PointerEvent ) {
-		var button = button;
-		if (document.onselectstart != null) {
-			document.onselectstart  = null;
-			document.removeEventListener("mousemove", onmove, true);
-			button.style.cursor = "pointer";
-			return;
-		}
-		var sel = document.getSelection();
-		if (sel.isCollapsed || sel.anchorNode.parentNode == button)
-			return;
-		var value = (sel : Dynamic).toString(); // no toString?
-		if (query.value == value || value.length < 2)
-			return;
-		display(button) = CSS_INLINE_BLOCK;
-		button.style.left = e.pageX + "px";
-		button.style.top = Math.max(e.pageY - 50, 0) + "px";
-		query.value = value;
-		srange = sel.getRangeAt(0);
 	}
 }

@@ -25,6 +25,7 @@ class Background {
 	}
 
 	static function doResponse( ret : String ) {
+		LOG('(doResponse) lastWords : $ret, lazySendResponse : ${null == lazySendResponse ? "null" : "function"}');
 		if (lazySendResponse != null)
 			lazySendResponse(ret); // disconnect
 		lazySendResponse = null;

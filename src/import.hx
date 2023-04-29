@@ -20,6 +20,7 @@ import js.html.KeyboardEvent;
 import Macros.text;
 import Macros.display;
 import Macros.clsl;
+import Macros.LOG;
 
 // Global
 import Global.CSS_INLINE_BLOCK;

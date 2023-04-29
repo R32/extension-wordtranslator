@@ -27,7 +27,7 @@ class HookBingTranslator {
 			tid = window.setTimeout(rolling, 100, old, lvl - 1);
 			return;
 		}
-		// console.log("sended respone");
+		LOG('(rolling)runtime.sendMessage({value : $cur, respone : true})');
 		chrome.Runtime.sendMessage({value : cur, respone : true});
 	}
 
