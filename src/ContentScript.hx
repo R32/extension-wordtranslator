@@ -18,23 +18,28 @@ class ContentScript {
 		if (button != null)
 			return;
 		document.onpointerup = mouseup;
-		button = HXX( <div id="{{ id }}">文</div> ); // TODO: a random word from localStorage wordlist
+		button = HXX( <div id="{{ id }}">翻译</div> ); // TODO: a random word from localStorage wordlist
 		button.style.cssText = "
 			position : absolute;
 			padding : 2px 4px;
 			margin : 0;
 			display : none;
-			border : 1px solid #bf1d1d;
+			border : 1px solid #00bcd4;
+			border-left-width : 12pt;
 			background-color : inherit;
 			font-size : 10pt;
 			cursor : pointer;
 			color : inherit;
 			z-index : 100;
 		";
-		button.onclick = function( e : MouseEvent ) {
+		button.onclick = function( e : PointerEvent ) {
 			e.stopPropagation();
+			if (headerclicks(e))
+				return;
 			if (srange != null) {
 				var sel = document.getSelection();
+				if (sel.anchorNode.parentNode == button && !sel.isCollapsed)
+					return;
 				sel.removeAllRanges();
 				sel.addRange(srange);
 			}
@@ -44,8 +49,10 @@ class ContentScript {
 			halt(e);
 			display(button) = CSS_NONE;
 		}
-		button.onpointerdown = function( e : MouseEvent ) {
+		button.onpointerdown = function( e : PointerEvent ) {
 			e.stopPropagation();
+			if (!headerclicks(e))
+				return;
 			document.onselectstart = halt;
 			// move button
 			btnpos.x = Std.parseInt(button.style.left) - e.screenX;
@@ -57,6 +64,8 @@ class ContentScript {
 		document.body.appendChild(button);
 		ContentScript.button = button;
 	}
+
+	static inline function headerclicks( e : PointerEvent ) return e.layerX < (devicePixelRatio * 16);
 
 	static function update(zhs) {
 		if (zhs != null)
@@ -74,7 +83,8 @@ class ContentScript {
 		e.stopPropagation();
 	}
 
-	static function mouseup( e : js.html.PointerEvent ) {
+	static function mouseup( e : PointerEvent ) {
+		var button = button;
 		if (document.onselectstart != null) {
 			document.onselectstart  = null;
 			document.removeEventListener("mousemove", onmove, true);
@@ -82,14 +92,14 @@ class ContentScript {
 			return;
 		}
 		var sel = document.getSelection();
-		if (sel.rangeCount < 1)
+		if (sel.isCollapsed || sel.anchorNode.parentNode == button)
 			return;
 		var value = (sel : Dynamic).toString(); // no toString?
 		if (query.value == value || value.length < 2)
 			return;
 		display(button) = CSS_INLINE_BLOCK;
-		button.style.left = e.pageX + 20 + "px";
-		button.style.top = e.pageY - 50 + "px";
+		button.style.left = e.pageX + "px";
+		button.style.top = Math.max(e.pageY - 50, 0) + "px";
 		query.value = value;
 		srange = sel.getRangeAt(0);
 	}

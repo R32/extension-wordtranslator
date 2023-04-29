@@ -12,13 +12,19 @@ class ContentScript {
 		document.onpointerup = ContentScript.mouseup;
 		let node = document.createElement("div");
 		node.id = "bing_trans_btn";
-		node.innerText = "文";
+		node.innerText = "翻译";
 		button = node;
-		button.style.cssText = "\r\n\t\t\tposition : absolute;\r\n\t\t\tpadding : 2px 4px;\r\n\t\t\tmargin : 0;\r\n\t\t\tdisplay : none;\r\n\t\t\tborder : 1px solid #bf1d1d;\r\n\t\t\tbackground-color : inherit;\r\n\t\t\tfont-size : 10pt;\r\n\t\t\tcursor : pointer;\r\n\t\t\tcolor : inherit;\r\n\t\t\tz-index : 100;\r\n\t\t";
+		button.style.cssText = "\r\n\t\t\tposition : absolute;\r\n\t\t\tpadding : 2px 4px;\r\n\t\t\tmargin : 0;\r\n\t\t\tdisplay : none;\r\n\t\t\tborder : 1px solid #00bcd4;\r\n\t\t\tborder-left-width : 12pt;\r\n\t\t\tbackground-color : inherit;\r\n\t\t\tfont-size : 10pt;\r\n\t\t\tcursor : pointer;\r\n\t\t\tcolor : inherit;\r\n\t\t\tz-index : 100;\r\n\t\t";
 		button.onclick = function(e) {
 			e.stopPropagation();
+			if(e.layerX < devicePixelRatio * 16) {
+				return;
+			}
 			if(ContentScript.srange != null) {
 				let sel = document.getSelection();
+				if(sel.anchorNode.parentNode == button && !sel.isCollapsed) {
+					return;
+				}
 				sel.removeAllRanges();
 				sel.addRange(ContentScript.srange);
 			}
@@ -30,6 +36,9 @@ class ContentScript {
 		};
 		button.onpointerdown = function(e) {
 			e.stopPropagation();
+			if(!(e.layerX < devicePixelRatio * 16)) {
+				return;
+			}
 			document.onselectstart = ContentScript.halt;
 			ContentScript.btnpos.x = Std.parseInt(button.style.left) - e.screenX;
 			ContentScript.btnpos.y = Std.parseInt(button.style.top) - e.screenY;
@@ -55,23 +64,24 @@ class ContentScript {
 		e.stopPropagation();
 	}
 	static mouseup(e) {
+		let button = ContentScript.button;
 		if(document.onselectstart != null) {
 			document.onselectstart = null;
 			document.removeEventListener("mousemove",ContentScript.onmove,true);
-			ContentScript.button.style.cursor = "pointer";
+			button.style.cursor = "pointer";
 			return;
 		}
 		let sel = document.getSelection();
-		if(sel.rangeCount < 1) {
+		if(sel.isCollapsed || sel.anchorNode.parentNode == button) {
 			return;
 		}
 		let value = sel.toString();
 		if(ContentScript.query.value == value || value.length < 2) {
 			return;
 		}
-		ContentScript.button.style.display = "inline-block";
-		ContentScript.button.style.left = e.pageX + 20 + "px";
-		ContentScript.button.style.top = e.pageY - 50 + "px";
+		button.style.display = "inline-block";
+		button.style.left = e.pageX + "px";
+		button.style.top = Math.max(e.pageY - 50,0) + "px";
 		ContentScript.query.value = value;
 		ContentScript.srange = sel.getRangeAt(0);
 	}

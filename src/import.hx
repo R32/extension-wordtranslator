@@ -11,6 +11,7 @@ import js.html.URL;
 import js.html.DOMElement;
 import js.html.Event;
 import js.html.MouseEvent;
+import js.html.PointerEvent;
 import js.html.KeyboardEvent;
 
 // chrome extension
@@ -31,4 +32,5 @@ import Global.CSS_EMPTY;
 import Global.console;
 import Global.document;
 import Global.window;
+import Global.devicePixelRatio;
 #end

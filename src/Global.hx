@@ -14,3 +14,4 @@ class Global {
 @:native("console") extern var console : js.html.ConsoleInstance;
 @:native("document") extern var document : js.html.Document;
 @:native("window") extern var window : js.html.Window;
+@:native("devicePixelRatio") extern var devicePixelRatio : Float;
