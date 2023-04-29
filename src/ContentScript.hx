@@ -46,6 +46,9 @@ class ContentScript {
 			chrome.Runtime.sendMessage(query, update);
 		}
 		button.oncontextmenu = function( e : MouseEvent ) {
+			var sel = document.getSelection();
+			if (sel.anchorNode.parentNode == button && !sel.isCollapsed)
+				return;
 			halt(e);
 			display(button) = CSS_NONE;
 		}

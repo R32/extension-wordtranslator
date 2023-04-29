@@ -31,6 +31,10 @@ class ContentScript {
 			chrome.runtime.sendMessage(ContentScript.query,ContentScript.update);
 		};
 		button.oncontextmenu = function(e) {
+			let sel = document.getSelection();
+			if(sel.anchorNode.parentNode == button && !sel.isCollapsed) {
+				return;
+			}
 			ContentScript.halt(e);
 			button.style.display = "none";
 		};
