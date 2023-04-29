@@ -4,11 +4,10 @@ import chrome.Tabs;
 
 class Background {
 
-	static inline var TIN  = "tta_input_ta";
+	static var bingurl = "https://cn.bing.com/translator";
 
-	static inline var TOUT = "tta_output_ta";
-
-	static inline var TVOICE = "tta_playiconsrc";
+	// Some browsers may report a promise error if there is no callback in executeScript
+	static function NOP(){}
 
 	static function loadpage( href : String, ?callback : Tab->Void ) {
 		Tabs.query({ url : href }, function(list) {
@@ -19,8 +18,6 @@ class Background {
 			Tabs.create({url : href}, callback);
 		});
 	}
-
-	static var bingurl = "https://cn.bing.com/translator";
 
 	static function main() {
 		var lazySendResponse : String->Void = null;
@@ -49,49 +46,31 @@ class Background {
 					return;
 				}
 				chrome.Scripting.executeScript({
-					target : {tabId: list[0].id},
+					target : {tabId : list[0].id},
 					args : [same ? null : prevMsg],
-					func : function(english) {
-						// WARINING: the codes of this scope belongs to the target PAGE, NOT Background.
-						if (english != null) {
-							var input : js.html.TextAreaElement = cast document.getElementById(TIN);
-							input.value = english;
-							var output : js.html.TextAreaElement = cast document.getElementById(TOUT);
-							var old = output.value;
-							var rolling : Function = null;
-							rolling = function() {
-								var cur = output.value;
-								var len = cur.length;
-								if (cur == old || (cur.charAt(len - 1) == "." && cur.charAt(len - 2) == ".")) {
-									window.setTimeout(rolling, 100);
-									return;
-								}
-								// console.log("sended respone");
-								chrome.Runtime.sendMessage({value : cur, respone : true});
-							}
-							input.click();
-							window.setTimeout(rolling, 100);
-						}
-						document.getElementById(TVOICE).click();
+					func : function(ens) {
+						HookBingTranslator.run(ens);
 					}
-				});
+				}, NOP);
 			});
 			return lazySendResponse != null; // return true to make sendResponse works
 		});
 
 		chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {
-			var dot = t.url.indexOf(":");
-			if (dot == -1)
-				return;
-			switch(t.url.substring(0, dot)) {
+			switch(t.url.substring(0, t.url.indexOf(":"))) {
 			case "http", "https" , "file":
 			default:
 				return;
 			}
+			var inject = if (t.url.substring(0, bingurl.length) != bingurl) {
+				"js/content-script.js";
+			} else {
+				"js/hook-bingtranslator.js";
+			}
 			chrome.Scripting.executeScript({
-				target : {tabId: t.tabId},
-				files : ["js/content-script.js"]
-			});
+				target : {tabId : t.tabId},
+				files : [inject]
+			}, NOP);
 		});
 
 		chrome.Action.onClicked.addListener(function(tab) {

@@ -10,6 +10,7 @@
 
 --each
 -D js-global=globalThis
+--macro exclude('HookBingTranslator')
 -main Background
 -js build/js/background.js
 
@@ -17,3 +18,9 @@
 -D js-global=window
 -main ContentScript
 -js build/js/content-script.js
+
+--next
+-D js-global=window
+-D js-classic
+-js build/js/hook-bingtranslator.js
+HookBingTranslator

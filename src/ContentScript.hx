@@ -34,7 +34,7 @@ class ContentScript {
 		";
 		button.onclick = function( e : PointerEvent ) {
 			e.stopPropagation();
-			if (headerclicks(e))
+			if (headerhit(e))
 				return;
 			if (srange != null) {
 				var sel = document.getSelection();
@@ -51,7 +51,7 @@ class ContentScript {
 		}
 		button.onpointerdown = function( e : PointerEvent ) {
 			e.stopPropagation();
-			if (!headerclicks(e))
+			if (!headerhit(e))
 				return;
 			document.onselectstart = halt;
 			// move button
@@ -65,7 +65,7 @@ class ContentScript {
 		ContentScript.button = button;
 	}
 
-	static inline function headerclicks( e : PointerEvent ) return e.layerX < (devicePixelRatio * 16);
+	static inline function headerhit( e : PointerEvent ) return e.layerX < (devicePixelRatio * 16);
 
 	static function update(zhs) {
 		if (zhs != null)
