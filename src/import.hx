@@ -15,8 +15,6 @@ import js.html.PointerEvent;
 import js.html.KeyboardEvent;
 
 // chrome extension
-import chrome.Tabs;
-import chrome.Storage;
 
 // Macro
 import Macros.text;

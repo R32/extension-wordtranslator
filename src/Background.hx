@@ -4,10 +4,13 @@ import chrome.Tabs;
 
 class Background {
 
-	static var bingurl = "https://cn.bing.com/translator";
+	static var bingId = -1;
 
-	// Some browsers may report a promise error if there is no callback in executeScript
-	static function NOP(){}
+	static var bingUrl = "https://cn.bing.com/translator";
+
+	static var lastWords : String;
+
+	static var lazySendResponse : String->Void;
 
 	static function loadpage( href : String, ?callback : Tab->Void ) {
 		Tabs.query({ url : href }, function(list) {
@@ -19,40 +22,51 @@ class Background {
 		});
 	}
 
+	static function doResponse( ret : String ) {
+		if (lazySendResponse != null)
+			lazySendResponse(ret); // disconnect
+		lazySendResponse = null;
+		lastWords = ret;
+	}
+
+	static function translate( ens : String ) {
+		if (bingId != -1) {
+			chrome.Scripting.executeScript({
+				target : {tabId : bingId},
+				args : [ens],
+				func : function(s) {
+					HookBingTranslator.run(s);
+				}
+			}).catchError(function(_) {
+				bingId = -1;
+				doResponse(null);
+			});
+			return;
+		}
+		Tabs.query({ url : bingUrl + "*" }, function(list) {
+			if (list.length == 0) {
+				doResponse(null);
+				loadpage(bingUrl);
+				return;
+			}
+			bingId = list[0].id;
+			translate(ens);
+		});
+	}
+
 	static function main() {
-		var lazySendResponse : String->Void = null;
-		var prevMsg : String = null;
-		chrome.Runtime.onMessage.addListener(function( query : Message, sender, ?sendResponse ) {
+		chrome.Runtime.onMessage.addListener(function( query : Message, _, ?sendResponse ) {
 			if (query.respone) {
-				if (lazySendResponse != null)
-					lazySendResponse(query.value);
-				lazySendResponse = null;
+				doResponse(query.value);
 				return false;
 			}
-			var same = prevMsg == query.value;
-			if (same) {
+			var ens = lastWords == query.value ? null : query.value;
+			if (ens == null) {
 				sendResponse(null);              // disconnect the callback from ContentScript
 			} else {
 				lazySendResponse = sendResponse; // do response later
-				prevMsg = query.value;
 			}
-			Tabs.query({ url : bingurl + "*" }, function(list) {
-				if (list.length == 0) {
-					if (lazySendResponse != null)
-						lazySendResponse(null);
-					lazySendResponse = null;
-					prevMsg = null;
-					loadpage(bingurl);
-					return;
-				}
-				chrome.Scripting.executeScript({
-					target : {tabId : list[0].id},
-					args : [same ? null : prevMsg],
-					func : function(ens) {
-						HookBingTranslator.run(ens);
-					}
-				}, NOP);
-			});
+			translate(ens);
 			return lazySendResponse != null; // return true to make sendResponse works
 		});
 
@@ -62,15 +76,21 @@ class Background {
 			default:
 				return;
 			}
-			var inject = if (t.url.substring(0, bingurl.length) != bingurl) {
-				"js/content-script.js";
-			} else {
-				"js/hook-bingtranslator.js";
+			var inject = "js/content-script.js";
+			if (t.url.substring(0, bingUrl.length) == bingUrl) {
+				inject = "js/hook-bingtranslator.js";
+				if (bingId == -1)
+					bingId = t.tabId;
 			}
 			chrome.Scripting.executeScript({
 				target : {tabId : t.tabId},
 				files : [inject]
-			}, NOP);
+			}).catchError(function(_){}); // some invisible pages that you can't inject
+		});
+
+		chrome.Tabs.onRemoved.addListener(function(tid, _) {
+			if (tid == bingId)
+				bingId = -1;
 		});
 
 		chrome.Action.onClicked.addListener(function(tab) {
