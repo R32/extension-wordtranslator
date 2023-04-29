@@ -12,16 +12,27 @@ class HookBingTranslator {
 
 	static inline var TVOICE = "tta_playiconsrc";
 
-	static function rolling( old : String ) {
+	static var tid = -1;
+
+	static function rolling( old : String, lvl : Int ) {
+		tid = -1;
+		if (lvl < 0) {
+			chrome.I18n.getMessage("QUERY_FAILED", faild);
+			return;
+		}
 		var out = fromId(TOUT);
 		var cur = out.value;
 		var len = cur.length;
 		if (cur == old || (cur.fastCodeAt(len - 1) == ".".code && cur.fastCodeAt(len - 2) == ".".code)) {
-			window.setTimeout(rolling, 100, old);
+			tid = window.setTimeout(rolling, 100, old, lvl - 1);
 			return;
 		}
 		// console.log("sended respone");
 		chrome.Runtime.sendMessage({value : cur, respone : true});
+	}
+
+	static function faild( s : String ) {
+		chrome.Runtime.sendMessage({value : s, respone : true});
 	}
 
 	@:keep public static function run( ens : String ) {
@@ -29,7 +40,9 @@ class HookBingTranslator {
 			var input = fromId(TIN);
 			input.value = ens;
 			input.click();
-			window.setTimeout(rolling, 100, fromId(TOUT).value);
+			if (tid > 0)
+				window.clearTimeout(tid);
+			tid = window.setTimeout(rolling, 100, fromId(TOUT).value, 60); // 6 seconds
 		}
 		voice();
 	}

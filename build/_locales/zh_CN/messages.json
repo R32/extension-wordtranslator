@@ -2,6 +2,9 @@
 	"APP_NAME": {
 		"message": "羊毛查词"
 	},
+	"QUERY_FAILED" : {
+		"message": "查词失败"
+	},
 	"DESCRIPTION": {
 		"message": "薅“微软必应翻译”羊毛，双击或选择单词/短句后点击弹出的标签即可"
 	}

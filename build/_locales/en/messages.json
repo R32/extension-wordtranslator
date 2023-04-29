@@ -2,6 +2,9 @@
 	"APP_NAME": {
 		"message": "yangmao words"
 	},
+	"QUERY_FAILED" : {
+		"message": "query failed"
+	},
 	"DESCRIPTION": {
 		"message": "sends text to bing translator"
 	}
