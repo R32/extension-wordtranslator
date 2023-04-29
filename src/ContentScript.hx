@@ -65,6 +65,7 @@ class ContentScript {
 		ContentScript.button = button;
 	}
 
+	// border-left-width is 12pt then (12/72 * 96px) == 16px
 	static inline function headerhit( e : PointerEvent ) return e.layerX < (devicePixelRatio * 16);
 
 	static function update(zhs) {
