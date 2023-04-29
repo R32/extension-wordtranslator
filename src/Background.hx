@@ -6,7 +6,9 @@ class Background {
 
 	static var bingId = -1;
 
-	static var bingUrl = "https://cn.bing.com/translator";
+	static var baseUrl = "bing.com/translator";
+
+	static var bingUrl : String;
 
 	static var lastWords : String;
 
@@ -55,6 +57,12 @@ class Background {
 	}
 
 	static function main() {
+		if (chrome.I18n.getUILanguage() == "zh-CN") {
+			bingUrl = "https://" + "cn." + baseUrl;
+		} else {
+			bingUrl = "https://" + baseUrl;
+		}
+
 		chrome.Runtime.onMessage.addListener(function( query : Message, _, ?sendResponse ) {
 			if (query.respone) {
 				doResponse(query.value);
@@ -67,7 +75,7 @@ class Background {
 				lazySendResponse = sendResponse; // do response later
 			}
 			translate(ens);
-			return lazySendResponse != null; // return true to make sendResponse works
+			return lazySendResponse != null; // return true to make lazySendResponse available
 		});
 
 		chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {
@@ -77,7 +85,7 @@ class Background {
 				return;
 			}
 			var inject = "js/content-script.js";
-			if (t.url.substring(0, bingUrl.length) == bingUrl) {
+			if (t.url.indexOf(baseUrl, 7) >= 7) { // "http://".length
 				inject = "js/hook-bingtranslator.js";
 				if (bingId == -1)
 					bingId = t.tabId;

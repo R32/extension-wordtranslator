@@ -38,6 +38,11 @@ class Background {
 		});
 	}
 	static main() {
+		if(chrome.i18n.getUILanguage() == "zh-CN") {
+			Background.bingUrl = "https://" + "cn." + Background.baseUrl;
+		} else {
+			Background.bingUrl = "https://" + Background.baseUrl;
+		}
 		chrome.runtime.onMessage.addListener(function(query,_,sendResponse) {
 			if(query.respone) {
 				Background.doResponse(query.value);
@@ -60,7 +65,7 @@ class Background {
 				return;
 			}
 			let inject = "js/content-script.js";
-			if(t.url.substring(0,Background.bingUrl.length) == Background.bingUrl) {
+			if(t.url.indexOf(Background.baseUrl,7) >= 7) {
 				inject = "js/hook-bingtranslator.js";
 				if(Background.bingId == -1) {
 					Background.bingId = t.tabId;
@@ -82,6 +87,6 @@ class Background {
 {
 }
 Background.bingId = -1;
-Background.bingUrl = "https://cn.bing.com/translator";
+Background.baseUrl = "bing.com/translator";
 Background.main();
 })(globalThis);
