@@ -37,12 +37,13 @@ class HookBingTranslator {
 
 	@:keep public static function run( ens : String ) {
 		if (ens != null) {
+			var old = fromId(TOUT).value;
 			var input = fromId(TIN);
 			input.value = ens;
 			input.click();
 			if (tid > 0)
 				window.clearTimeout(tid);
-			tid = window.setTimeout(rolling, 100, fromId(TOUT).value, 60); // 6 seconds
+			tid = window.setTimeout(rolling, 100, old, 60); // 6 seconds
 		}
 		voice();
 	}

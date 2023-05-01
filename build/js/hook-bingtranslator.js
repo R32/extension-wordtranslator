@@ -20,13 +20,14 @@ class hookbt {
 	}
 	static run(ens) {
 		if(ens != null) {
+			let old = document.getElementById("tta_output_ta").value;
 			let input = document.getElementById("tta_input_ta");
 			input.value = ens;
 			input.click();
 			if(hookbt.tid > 0) {
 				window.clearTimeout(hookbt.tid);
 			}
-			hookbt.tid = window.setTimeout(hookbt.rolling,100,document.getElementById("tta_output_ta").value,60);
+			hookbt.tid = window.setTimeout(hookbt.rolling,100,old,60);
 		}
 		document.getElementById("tta_playiconsrc").click();
 	}
