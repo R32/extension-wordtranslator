@@ -61,8 +61,8 @@ class ContentScript {
 				return;
 			document.onselectstart = halt;
 			// move button
-			movpos.x = Std.parseInt(button.style.left) - e.screenX;
-			movpos.y = Std.parseInt(button.style.top) - e.screenY;
+			movpos.x = button.offsetLeft - e.screenX;
+			movpos.y = button.offsetTop - e.screenY;
 			document.removeEventListener("mousemove", onmove, true);
 			document.addEventListener("mousemove", onmove, true);
 			button.style.cursor = "move";

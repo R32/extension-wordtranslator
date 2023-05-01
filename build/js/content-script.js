@@ -58,8 +58,8 @@ class ContentScript {
 				return;
 			}
 			document.onselectstart = ContentScript.halt;
-			movpos_x = Std.parseInt(button.style.left) - e.screenX;
-			movpos_y = Std.parseInt(button.style.top) - e.screenY;
+			movpos_x = button.offsetLeft - e.screenX;
+			movpos_y = button.offsetTop - e.screenY;
 			document.removeEventListener("mousemove",onmove,true);
 			document.addEventListener("mousemove",onmove,true);
 			button.style.cursor = "move";
@@ -90,15 +90,6 @@ class ContentScript {
 	static halt(e) {
 		e.preventDefault();
 		e.stopPropagation();
-	}
-}
-class Std {
-	static parseInt(x) {
-		let v = parseInt(x);
-		if(isNaN(v)) {
-			return null;
-		}
-		return v;
 	}
 }
 {
