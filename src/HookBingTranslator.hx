@@ -14,25 +14,22 @@ class HookBingTranslator {
 
 	static var tid = -1;
 
+	static inline function inQuerying( s : String, len ) {
+		return len >= 2 && s.fastCodeAt(len - 1) == ".".code && s.fastCodeAt(len - 2) == ".".code;
+	}
+
 	static function rolling( old : String, lvl : Int ) {
 		tid = -1;
-		if (lvl < 0) {
-			chrome.I18n.getMessage("QUERY_FAILED", faild);
-			return;
-		}
-		var out = fromId(TOUT);
-		var cur = out.value;
+		var cur = fromId(TOUT).value;
 		var len = cur.length;
-		if (cur == old || (cur.fastCodeAt(len - 1) == ".".code && cur.fastCodeAt(len - 2) == ".".code)) {
-			tid = window.setTimeout(rolling, 100, old, lvl - 1);
+		if (lvl < 0) {
+			cur = chrome.I18n.getUILanguage() == "zh-CN" ? "查词失败" : "query failed";
+		} else if (cur == old || inQuerying(cur, len) || cur == " ") {
+			tid = window.setTimeout(rolling, 300, old, lvl - 1);
 			return;
 		}
 		LOG('(rolling)runtime.sendMessage({value : $cur, respone : true})');
 		chrome.Runtime.sendMessage({value : cur, respone : true});
-	}
-
-	static function faild( s : String ) {
-		chrome.Runtime.sendMessage({value : s, respone : true});
 	}
 
 	@:keep public static function run( ens : String ) {
@@ -43,7 +40,7 @@ class HookBingTranslator {
 			input.click();
 			if (tid > 0)
 				window.clearTimeout(tid);
-			tid = window.setTimeout(rolling, 100, old, 60); // 6 seconds
+			tid = window.setTimeout(rolling, 300, old, 20); // 6 seconds
 		}
 		voice();
 	}

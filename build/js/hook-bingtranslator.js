@@ -3,20 +3,15 @@ var $global = window;
 class hookbt {
 	static rolling(old,lvl) {
 		hookbt.tid = -1;
-		if(lvl < 0) {
-			chrome.i18n.getMessage("QUERY_FAILED",hookbt.faild);
-			return;
-		}
 		let cur = document.getElementById("tta_output_ta").value;
 		let len = cur.length;
-		if(cur == old || cur.charCodeAt(len - 1) == 46 && cur.charCodeAt(len - 2) == 46) {
-			hookbt.tid = window.setTimeout(hookbt.rolling,100,old,lvl - 1);
+		if(lvl < 0) {
+			cur = chrome.i18n.getUILanguage() == "zh-CN" ? "查词失败" : "query failed";
+		} else if(cur == old || len >= 2 && cur.charCodeAt(len - 1) == 46 && cur.charCodeAt(len - 2) == 46 || cur == " ") {
+			hookbt.tid = window.setTimeout(hookbt.rolling,300,old,lvl - 1);
 			return;
 		}
 		chrome.runtime.sendMessage({ value : cur, respone : true});
-	}
-	static faild(s) {
-		chrome.runtime.sendMessage({ value : s, respone : true});
 	}
 	static run(ens) {
 		if(ens != null) {
@@ -27,7 +22,7 @@ class hookbt {
 			if(hookbt.tid > 0) {
 				window.clearTimeout(hookbt.tid);
 			}
-			hookbt.tid = window.setTimeout(hookbt.rolling,100,old,60);
+			hookbt.tid = window.setTimeout(hookbt.rolling,300,old,20);
 		}
 		document.getElementById("tta_playiconsrc").click();
 	}
