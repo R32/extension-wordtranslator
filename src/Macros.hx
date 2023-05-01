@@ -17,7 +17,7 @@ class Macros {
 		return macro @:pos(elem.pos) ($elem : DOMElement).classList;
 
 	macro public static function LOG( args : Array<Expr> ) {
-		// if no "--no-traces" or "--debug"
+		// if no "-D no-traces" or "--debug"
 		if (!Context.defined("no_traces") || Context.defined("debug"))
 			return macro @:pos(args[0].pos) console.log($a{ args });
 		return macro {};

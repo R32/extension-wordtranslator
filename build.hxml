@@ -3,7 +3,7 @@
 -D js-es=6
 -D analyzer-optimize
 -D old-error-format
---no-traces
+-D no-traces
 
 -lib chrome-extension-v3
 -lib no-vdom

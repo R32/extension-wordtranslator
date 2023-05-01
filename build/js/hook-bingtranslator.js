@@ -11,7 +11,7 @@ class hookbt {
 			hookbt.tid = window.setTimeout(hookbt.rolling,300,old,lvl - 1);
 			return;
 		}
-		chrome.runtime.sendMessage({ value : cur, respone : true});
+		chrome.runtime.sendMessage([1,cur]);
 	}
 	static run(ens) {
 		if(ens != null) {

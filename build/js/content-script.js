@@ -5,29 +5,44 @@ class ContentScript {
 		if(document.body == null) {
 			return;
 		}
-		let button = document.getElementById("bing_trans_btn");
+		let movpos_y;
+		let movpos_x = 0;
+		movpos_y = 0;
+		let range = null;
+		let query = [0,""];
+		let button = document.getElementById("yangmaowords");
 		if(button != null) {
 			return;
 		}
 		let node = document.createElement("div");
-		node.id = "bing_trans_btn";
+		node.id = "yangmaowords";
 		node.innerText = "翻译";
 		button = node;
 		button.style.cssText = "\r\n\t\t\tposition : absolute;\r\n\t\t\tpadding : 2px 4px;\r\n\t\t\tmargin : 0;\r\n\t\t\tdisplay : none;\r\n\t\t\tborder : 1px solid #00bcd4;\r\n\t\t\tborder-left-width : 12pt;\r\n\t\t\tbackground-color : inherit;\r\n\t\t\tfont-size : 10pt;\r\n\t\t\tcursor : pointer;\r\n\t\t\tcolor : inherit;\r\n\t\t\tz-index : 101;\r\n\t\t";
+		let onmove = function(e) {
+			e.stopPropagation();
+			button.style.left = movpos_x + e.screenX + "px";
+			button.style.top = movpos_y + e.screenY + "px";
+		};
+		let update = function(s) {
+			if(s != null) {
+				button.innerText = s;
+			}
+		};
 		button.onclick = function(e) {
 			e.stopPropagation();
 			if(e.layerX < devicePixelRatio * 16) {
 				return;
 			}
-			if(ContentScript.srange != null) {
+			if(range != null) {
 				let sel = document.getSelection();
 				if(!sel.isCollapsed && sel.anchorNode.parentNode == button) {
 					return;
 				}
 				sel.removeAllRanges();
-				sel.addRange(ContentScript.srange);
+				sel.addRange(range);
 			}
-			chrome.runtime.sendMessage(ContentScript.query,ContentScript.update);
+			chrome.runtime.sendMessage(query,update);
 		};
 		button.oncontextmenu = function(e) {
 			let sel = document.getSelection();
@@ -43,16 +58,16 @@ class ContentScript {
 				return;
 			}
 			document.onselectstart = ContentScript.halt;
-			ContentScript.btnpos.x = Std.parseInt(button.style.left) - e.screenX;
-			ContentScript.btnpos.y = Std.parseInt(button.style.top) - e.screenY;
-			document.removeEventListener("mousemove",ContentScript.onmove,true);
-			document.addEventListener("mousemove",ContentScript.onmove,true);
+			movpos_x = Std.parseInt(button.style.left) - e.screenX;
+			movpos_y = Std.parseInt(button.style.top) - e.screenY;
+			document.removeEventListener("mousemove",onmove,true);
+			document.addEventListener("mousemove",onmove,true);
 			button.style.cursor = "move";
 		};
 		document.onpointerup = function(e) {
 			if(document.onselectstart != null) {
 				document.onselectstart = null;
-				document.removeEventListener("mousemove",ContentScript.onmove,true);
+				document.removeEventListener("mousemove",onmove,true);
 				button.style.cursor = "pointer";
 				return;
 			}
@@ -61,27 +76,16 @@ class ContentScript {
 				return;
 			}
 			let value = sel.toString();
-			if(ContentScript.query.value == value || value.length < 2) {
+			if(query[1] == value || value.length < 2) {
 				return;
 			}
 			button.style.display = "inline-block";
 			button.style.left = e.pageX + "px";
 			button.style.top = Math.max(e.pageY - 50,0) + "px";
-			ContentScript.query.value = value;
-			ContentScript.srange = sel.getRangeAt(0);
+			query[1] = value;
+			range = sel.getRangeAt(0);
 		};
 		document.body.appendChild(button);
-		ContentScript.button = button;
-	}
-	static update(zhs) {
-		if(zhs != null) {
-			ContentScript.button.innerText = zhs;
-		}
-	}
-	static onmove(e) {
-		e.stopPropagation();
-		ContentScript.button.style.left = ContentScript.btnpos.x + e.screenX + "px";
-		ContentScript.button.style.top = ContentScript.btnpos.y + e.screenY + "px";
 	}
 	static halt(e) {
 		e.preventDefault();
@@ -99,7 +103,5 @@ class Std {
 }
 {
 }
-ContentScript.query = { value : ""};
-ContentScript.btnpos = { x : 0, y : 0};
 ContentScript.main();
 })(window);

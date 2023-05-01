@@ -28,8 +28,8 @@ class HookBingTranslator {
 			tid = window.setTimeout(rolling, 300, old, lvl - 1);
 			return;
 		}
-		LOG('(rolling)runtime.sendMessage({value : $cur, respone : true})');
-		chrome.Runtime.sendMessage({value : cur, respone : true});
+		LOG('(rolling)runtime.sendMessage({value : $cur, kind : respone})');
+		sendMessage(new Message(Respone, cur));
 	}
 
 	@:keep public static function run( ens : String ) {

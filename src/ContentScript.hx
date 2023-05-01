@@ -1,19 +1,13 @@
 package;
 
 class ContentScript {
-
-	static var button : DOMElement;
-
-	static var srange : js.html.Range;
-
-	static var query : Message = {value : ""};
-
-	static var btnpos = {x : 0, y : 0}; // position of button for moving
-
 	public static function main() {
 		if (document.body == null)
 			return;
-		var id = "bing_trans_btn";
+		var id = "yangmaowords";
+		var movpos = {x : 0, y : 0} // position of button for moving
+		var range : js.html.Range = null;
+		var query = new Message(Request, "");
 		var button = document.getElementById(id);
 		if (button != null)
 			return;
@@ -32,17 +26,25 @@ class ContentScript {
 			z-index : 101;
 		";
 		inline function onitself( sel : js.html.Selection ) return sel.anchorNode.parentNode == button;
-
+		var onmove = function( e : MouseEvent ) {
+			e.stopPropagation();
+			button.style.left = movpos.x + e.screenX + "px";
+			button.style.top  = movpos.y + e.screenY + "px";
+		}
+		var update = function( s : String ) {
+			if (s != null)
+				text(button) = s;
+		}
 		button.onclick = function( e : PointerEvent ) {
 			e.stopPropagation();
 			if (headerhit(e))
 				return;
-			if (srange != null) {
+			if (range != null) {
 				var sel = document.getSelection();
 				if (!sel.isCollapsed && onitself(sel))
 					return;
 				sel.removeAllRanges();
-				sel.addRange(srange);
+				sel.addRange(range);
 			}
 			chrome.Runtime.sendMessage(query, update);
 		}
@@ -59,8 +61,8 @@ class ContentScript {
 				return;
 			document.onselectstart = halt;
 			// move button
-			btnpos.x = Std.parseInt(button.style.left) - e.screenX;
-			btnpos.y = Std.parseInt(button.style.top) - e.screenY;
+			movpos.x = Std.parseInt(button.style.left) - e.screenX;
+			movpos.y = Std.parseInt(button.style.top) - e.screenY;
 			document.removeEventListener("mousemove", onmove, true);
 			document.addEventListener("mousemove", onmove, true);
 			button.style.cursor = "move";
@@ -82,25 +84,12 @@ class ContentScript {
 			button.style.left = e.pageX + "px";
 			button.style.top = Math.max(e.pageY - 50, 0) + "px";
 			query.value = value;
-			srange = sel.getRangeAt(0);
+			range = sel.getRangeAt(0);
 		};
 		document.body.appendChild(button);
-		ContentScript.button = button;
 	}
-
 	// border-left-width is 12pt then (12/72 * 96px) == 16px
 	static inline function headerhit( e : PointerEvent ) return e.layerX < (devicePixelRatio * 16);
-
-	static function update(zhs) {
-		if (zhs != null)
-			text(button) = zhs;
-	}
-
-	static function onmove( e : MouseEvent ) {
-		e.stopPropagation();
-		button.style.left = btnpos.x + e.screenX + "px";
-		button.style.top  = btnpos.y + e.screenY + "px";
-	}
 
 	static function halt( e : Event ) {
 		e.preventDefault();

@@ -65,18 +65,20 @@ class Background {
 		}
 
 		chrome.Runtime.onMessage.addListener(function( query : Message, _, ?sendResponse ) {
-			if (query.respone) {
+			switch (query.kind) {
+			case Respone:
 				doResponse(query.value);
-				return false;
+			case Request:
+				var ens = lastWords == query.value ? null : query.value;
+				if (ens == null) {
+					sendResponse(null);              // disconnect the callback from ContentScript
+				} else {
+					lazySendResponse = sendResponse; // do response later
+				}
+				translate(ens);
+				return lazySendResponse != null; // return true to make lazySendResponse available
 			}
-			var ens = lastWords == query.value ? null : query.value;
-			if (ens == null) {
-				sendResponse(null);              // disconnect the callback from ContentScript
-			} else {
-				lazySendResponse = sendResponse; // do response later
-			}
-			translate(ens);
-			return lazySendResponse != null; // return true to make lazySendResponse available
+			return false;
 		});
 
 		chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {

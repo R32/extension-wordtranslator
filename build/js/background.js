@@ -44,18 +44,21 @@ class Background {
 			Background.bingUrl = "https://" + Background.baseUrl;
 		}
 		chrome.runtime.onMessage.addListener(function(query,_,sendResponse) {
-			if(query.respone) {
-				Background.doResponse(query.value);
-				return false;
+			switch(query[0]) {
+			case 0:
+				let ens = Background.lastWords == query[1] ? null : query[1];
+				if(ens == null) {
+					sendResponse(null);
+				} else {
+					Background.lazySendResponse = sendResponse;
+				}
+				Background.translate(ens);
+				return Background.lazySendResponse != null;
+			case 1:
+				Background.doResponse(query[1]);
+				break;
 			}
-			let ens = Background.lastWords == query.value ? null : query.value;
-			if(ens == null) {
-				sendResponse(null);
-			} else {
-				Background.lazySendResponse = sendResponse;
-			}
-			Background.translate(ens);
-			return Background.lazySendResponse != null;
+			return false;
 		});
 		chrome.webNavigation.onDOMContentLoaded.addListener(function(t) {
 			switch(t.url.substring(0,t.url.indexOf(":"))) {

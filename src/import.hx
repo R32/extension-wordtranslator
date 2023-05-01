@@ -3,6 +3,7 @@
 import haxe.Constraints.Function;
 import Nvd.HXX;
 import Data;
+import Data.sendMessage;
 // js
 import js.lib.Error;
 import js.lib.Promise;
