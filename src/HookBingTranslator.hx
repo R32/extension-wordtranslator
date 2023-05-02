@@ -2,7 +2,6 @@ package;
 
 import js.html.TextAreaElement;
  using StringTools;
- using NativeTools;
 
 @:native("hookbt")
 class HookBingTranslator {
