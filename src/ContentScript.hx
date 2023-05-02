@@ -1,5 +1,7 @@
 package;
 
+using ESXTools;
+
 class ContentScript {
 	public static function main() {
 		if (document.body == null)
@@ -77,8 +79,8 @@ class ContentScript {
 			var sel = document.getSelection();
 			if (sel.isCollapsed || onitself(sel))
 				return;
-			var value = (sel : Dynamic).toString(); // no toString?
-			if (query.value == value || value.length < 2)
+			var value = sel.toString().trimStart();
+			if (value == "" || query.value == value)
 				return;
 			display(button) = CSS_INLINE_BLOCK;
 			button.style.left = e.pageX + "px";

@@ -2,6 +2,7 @@ package;
 
 import js.html.TextAreaElement;
  using StringTools;
+ using NativeTools;
 
 @:native("hookbt")
 class HookBingTranslator {
@@ -14,17 +15,13 @@ class HookBingTranslator {
 
 	static var tid = -1;
 
-	static inline function inQuerying( s : String, len ) {
-		return len >= 2 && s.fastCodeAt(len - 1) == ".".code && s.fastCodeAt(len - 2) == ".".code;
-	}
-
 	static function rolling( lvl : Int ) {
 		tid = -1;
 		var cur = fromId(TOUT).value;
 		var len = cur.length;
 		if (lvl < 0) {
 			cur = chrome.I18n.getUILanguage() == "zh-CN" ? "查词失败" : "query failed";
-		} else if (inQuerying(cur, len) || cur == " ") {
+		} else if (cur.endsWith("...") || cur == " ") {
 			tid = window.setTimeout(rolling, 300, lvl - 1);
 			return;
 		}
