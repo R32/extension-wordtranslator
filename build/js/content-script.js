@@ -80,10 +80,11 @@ class ContentScript {
 				return;
 			}
 			button.style.display = "inline-block";
-			button.style.left = e.pageX + "px";
-			button.style.top = Math.max(e.pageY - 50,0) + "px";
-			query[1] = value;
 			range = sel.getRangeAt(0);
+			let rect = range.getClientRects()[0];
+			button.style.left = rect.left + window.pageXOffset + "px";
+			button.style.top = Math.max(rect.top + window.pageYOffset - button.offsetHeight - 2,0) + "px";
+			query[1] = value;
 		};
 		document.body.appendChild(button);
 	}

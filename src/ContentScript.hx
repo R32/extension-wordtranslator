@@ -83,10 +83,11 @@ class ContentScript {
 			if (value == "" || query.value == value)
 				return;
 			display(button) = CSS_INLINE_BLOCK;
-			button.style.left = e.pageX + "px";
-			button.style.top = Math.max(e.pageY - 50, 0) + "px";
-			query.value = value;
 			range = sel.getRangeAt(0);
+			var rect = range.getClientRects()[0];
+			button.style.left = rect.left + window.pageXOffset + "px";
+			button.style.top = Math.max(rect.top + window.pageYOffset - button.offsetHeight - 2, 0) + "px";
+			query.value = value;
 		};
 		document.body.appendChild(button);
 	}
