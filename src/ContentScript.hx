@@ -33,7 +33,7 @@ class ContentScript {
 			button.style.left = movpos.x + e.screenX + "px";
 			button.style.top  = movpos.y + e.screenY + "px";
 		}
-		var update = function( s : String ) {
+		var updating = function( s : String ) {
 			if (s != null)
 				text(button) = s;
 		}
@@ -48,7 +48,7 @@ class ContentScript {
 				sel.removeAllRanges();
 				sel.addRange(range);
 			}
-			chrome.Runtime.sendMessage(query, update);
+			chrome.Runtime.sendMessage(query, updating);
 		}
 		button.oncontextmenu = function( e : MouseEvent ) {
 			var sel = document.getSelection();
@@ -57,21 +57,23 @@ class ContentScript {
 			halt(e);
 			display(button) = CSS_NONE;
 		}
-		button.onpointerdown = function( e : PointerEvent ) {
-			e.stopPropagation();
+		var moving = false;
+		button.onmousedown = function( e : MouseEvent ) {
 			if (!headerhit(e))
 				return;
-			document.onselectstart = halt;
-			// move button
+			// prevents text selection
+			halt(e);
+			// moving start
 			movpos.x = button.offsetLeft - e.screenX;
 			movpos.y = button.offsetTop - e.screenY;
 			document.removeEventListener("mousemove", onmove, true);
 			document.addEventListener("mousemove", onmove, true);
 			button.style.cursor = "move";
+			moving = true;
 		};
-		document.onpointerup = function( e : PointerEvent ) {
-			if (document.onselectstart != null) {
-				document.onselectstart  = null;
+		document.onmouseup = function( e : MouseEvent ) {
+			if (moving) {
+				moving = false;
 				document.removeEventListener("mousemove", onmove, true);
 				button.style.cursor = "pointer";
 				return;
@@ -92,7 +94,7 @@ class ContentScript {
 		document.body.appendChild(button);
 	}
 	// border-left-width is 12pt then (12/72 * 96px) == 16px
-	static inline function headerhit( e : PointerEvent ) return e.layerX < (devicePixelRatio * 16);
+	static inline function headerhit( e : MouseEvent ) return e.layerX < (devicePixelRatio * 16);
 
 	static function halt( e : Event ) {
 		e.preventDefault();

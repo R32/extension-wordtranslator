@@ -24,7 +24,7 @@ class ContentScript {
 			button.style.left = movpos_x + e.screenX + "px";
 			button.style.top = movpos_y + e.screenY + "px";
 		};
-		let update = function(s) {
+		let updating = function(s) {
 			if(s != null) {
 				button.innerText = s;
 			}
@@ -42,7 +42,7 @@ class ContentScript {
 				sel.removeAllRanges();
 				sel.addRange(range);
 			}
-			chrome.runtime.sendMessage(query,update);
+			chrome.runtime.sendMessage(query,updating);
 		};
 		button.oncontextmenu = function(e) {
 			let sel = document.getSelection();
@@ -52,21 +52,22 @@ class ContentScript {
 			ContentScript.halt(e);
 			button.style.display = "none";
 		};
-		button.onpointerdown = function(e) {
-			e.stopPropagation();
+		let moving = false;
+		button.onmousedown = function(e) {
 			if(!(e.layerX < devicePixelRatio * 16)) {
 				return;
 			}
-			document.onselectstart = ContentScript.halt;
+			ContentScript.halt(e);
 			movpos_x = button.offsetLeft - e.screenX;
 			movpos_y = button.offsetTop - e.screenY;
 			document.removeEventListener("mousemove",onmove,true);
 			document.addEventListener("mousemove",onmove,true);
 			button.style.cursor = "move";
+			moving = true;
 		};
-		document.onpointerup = function(e) {
-			if(document.onselectstart != null) {
-				document.onselectstart = null;
+		document.onmouseup = function(e) {
+			if(moving) {
+				moving = false;
 				document.removeEventListener("mousemove",onmove,true);
 				button.style.cursor = "pointer";
 				return;
