@@ -28,6 +28,8 @@ class HookBingTranslator {
 		sendMessage(new Message(Respone, cur));
 	}
 
+	public static var sound = true;
+
 	@:keep public static function run( ens : String ) {
 		if (ens != null) {
 			var input = fromId(TIN);
@@ -37,7 +39,8 @@ class HookBingTranslator {
 				window.clearTimeout(tid);
 			tid = window.setTimeout(rolling, 300, 20); // 6 seconds
 		}
-		voice();
+		if (sound)
+			voice();
 	}
 
 	static inline function voice() {
@@ -46,5 +49,11 @@ class HookBingTranslator {
 
 	static inline function fromId(id) : TextAreaElement {
 		return cast document.getElementById(id);
+	}
+
+	static function main() {
+		chrome.Storage.local.get(KNOSOUND, function(attr : StoreNoSound) {
+			sound = !attr.nosound;
+		});
 	}
 }

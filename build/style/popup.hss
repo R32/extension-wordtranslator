@@ -1,0 +1,58 @@
+$padding-size     : 6pt;  /* PT = PX * 72 / 96 */
+$font-size        : 12pt;
+$color-gray       : #a9a9a9;
+$color-font       : #696969;
+$color-enable     : #00885a;
+$color-background : white;
+
+body {
+	font-size : $font-size;
+	font-family : Arial, SimSun;
+	background : $color-background;
+	padding : 0;
+	margin : 3pt;
+}
+
+#menumain {
+	> label {
+		display : block;
+		text-align : left;
+		width : $font-size * 5;
+		padding : $padding-size $padding-size * 2;
+		color : $color-font;
+		user-select: none;
+		cursor : pointer;
+		margin-top : -1px;
+		&:hover {
+			background-color : lighten($color-gray, 20%);
+		}
+		&[checked] {
+			color : $color-enable;
+		}
+		&[disabled] {
+			color : $color-gray;
+			cursor : auto;
+			pointer-events : none;
+			background-color : $color-background;
+		}
+		> input[type=checkbox] {
+			float : right;
+			cursor : pointer;
+			accent-color : CSS($color-enable);
+			&:checked {
+				box-shadow : $color-background 0 0 0 1px, $color-enable 0 0 0 2px;
+			}
+			&[disabled] {
+				box-shadow : none;
+			}
+		}
+		> a {
+			color : $color-font;
+			text-align : center;
+			display : block;
+			&:hover, &:focus {
+				color : $color-enable;
+			}
+		}
+	}
+}

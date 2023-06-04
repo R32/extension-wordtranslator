@@ -3,6 +3,7 @@ package;
 extern private enum abstract Kind(Int) to Int {
 	var Request = 0;
 	var Respone = 1;
+	var Control = 2;
 }
 
 extern abstract Message(Array<Dynamic>) {
@@ -17,3 +18,15 @@ extern abstract Message(Array<Dynamic>) {
 
 @:native("chrome.runtime.sendMessage")
 extern function sendMessage( msg : Message, ?callback : Dynamic->Void ) : Void;
+
+enum abstract StoreKey(String) to String {
+	var KDISBLED = "disabled";
+	var KNOSOUND = "nosound";
+}
+typedef StoreNoSound = {
+	nosound : Bool
+}
+typedef StoreDisabled = {
+	disabled : Bool
+}
+typedef StoreAll = StoreNoSound & StoreDisabled;

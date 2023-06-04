@@ -16,12 +16,14 @@
 	},
 
 	"action": {
+		"default_title": "__MSG_APP_NAME__",
 		"default_icon": "images/icons/128.png",
-		"default_title": "__MSG_APP_NAME__"
+		"default_popup": "popup.html"
 	},
 
 	"permissions": [
 		"tabs",
+		"storage",
 		"scripting",
 		"webNavigation"
 	],

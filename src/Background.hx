@@ -58,12 +58,13 @@ class Background {
 	}
 
 	static function main() {
+		var enablejs = true;
+		var nop = function(_){};
 		if (chrome.I18n.getUILanguage() == "zh-CN") {
 			bingUrl = "https://" + "cn." + baseUrl;
 		} else {
 			bingUrl = "https://" + baseUrl;
 		}
-
 		chrome.Runtime.onMessage.addListener(function( query : Message, _, ?sendResponse ) {
 			switch (query.kind) {
 			case Respone:
@@ -77,6 +78,24 @@ class Background {
 				}
 				translate(ens);
 				return lazySendResponse != null; // return true to make lazySendResponse available
+			case Control:
+				var args = query.value.split(":");
+				var on = args[1] != "true";
+				switch (args[0]) {
+				case KDISBLED:
+					LOG('enablejs :$enablejs, on : $on');
+					enablejs = on;
+				case KNOSOUND if (bingId != -1):
+					LOG('sound : $on');
+					chrome.Scripting.executeScript({
+						target : {tabId : bingId},
+						args : [on],
+						func : function(x) {
+							HookBingTranslator.sound = x;
+						}
+					}).catchError(nop);
+				default:
+				}
 			}
 			return false;
 		});
@@ -87,16 +106,21 @@ class Background {
 			default:
 				return;
 			}
-			var inject = "js/content-script.js";
-			if (t.url.indexOf(baseUrl, 7) >= 7) { // "http://".length
-				inject = "js/hook-bingtranslator.js";
+			var injectjs = "js/content-script.js";
+			var hookpage = t.url.indexOf(baseUrl, 7) >= 7; // "http://".length
+			LOG('enablejs : $enablejs, ishookpage : $hookpage');
+			if (!enablejs && !hookpage)
+				return;
+			if (hookpage) {
+				injectjs = "js/hook-bingtranslator.js";
 				if (bingId == -1)
 					bingId = t.tabId;
 			}
+			LOG('injectjs : $injectjs, page : ${t.url}');
 			chrome.Scripting.executeScript({
 				target : {tabId : t.tabId},
-				files : [inject]
-			}).catchError(function(_){}); // some invisible pages that you can't inject
+				files : [injectjs]
+			}).catchError(nop); // some invisible pages that you can't inject
 		});
 
 		chrome.Tabs.onRemoved.addListener(function(tid, _) {
@@ -104,8 +128,8 @@ class Background {
 				bingId = -1;
 		});
 
-		chrome.Action.onClicked.addListener(function(tab) {
-			loadpage(chrome.Runtime.getURL("options.html"));
+		chrome.Storage.local.get(KDISBLED, function(attr : StoreDisabled){
+			enablejs = !attr.disabled;
 		});
 	}
 }

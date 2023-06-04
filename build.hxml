@@ -23,5 +23,10 @@
 --next
 -D js-global=window
 -D js-classic
+-main HookBingTranslator
 -js build/js/hook-bingtranslator.js
-HookBingTranslator
+
+--next
+-D js-global=window
+-main Popup
+-js build/js/popup.js
