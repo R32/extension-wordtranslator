@@ -34,7 +34,7 @@ class Popup {
 		}
 	}
 
-	static function setAttribute( label : DOMElement, value : String, on : Bool) {
+	static function setAttribute( label : DOMElement, value : String, on : Bool ) {
 		if (on) {
 			label.setAttribute(value, "");
 			label.querySelector("input").setAttribute(value, "");
@@ -50,7 +50,15 @@ class Popup {
 		setAttribute(label, CHECKED, on);
 	}
 
-	static function uiSync() {
+	static function main() {
+		var menu = MenuUi.ofSelector(MenuUi.SELECTOR);
+		menu.dom.onclick = function ( e : PointerEvent ) {
+			var target = (cast e.target : js.html.InputElement);
+			if (target.tagName != "INPUT")
+				return;
+			onChecked(target.parentElement, target.checked);
+		}
+		// init
 		Storage.local.get([KNOSOUND, KDISBLED], function( stores : StoreAll ) {
 			var menu = MenuUi.ofSelector(MenuUi.SELECTOR);
 			if (stores.nosound) {
@@ -61,17 +69,6 @@ class Popup {
 				setNone(menu.sound, true);
 			}
 		});
-	}
-
-	static function main() {
-		var menu = MenuUi.ofSelector(MenuUi.SELECTOR);
-		menu.dom.onclick = function ( e : PointerEvent ) {
-			var target = (cast e.target : js.html.InputElement);
-			if (target.tagName != "INPUT")
-				return;
-			onChecked(target.parentElement, target.checked);
-		}
-		uiSync();
 	}
 }
 

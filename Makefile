@@ -5,6 +5,7 @@ SRC       := src
 HAXEFLAGS := -cp $(SRC)\
 	-dce full\
 	-D js-es=6\
+	-D js-global=window\
 	-D analyzer-optimize\
 	-D no-traces\
 	-lib chrome-extension-v3\
@@ -30,19 +31,19 @@ content: $(CONTENT)
 clean:
 	rm -rf $(BG) $(HOOK) $(CONTENT) $(POPUPJS) $(POPUPCSS)
 
-.PHONY: all bg hook content clean
+.PHONY: all bg hook popup content clean
 
 $(BG): $(SRC)/Background.hx $(COMMON)
 	haxe $(HAXEFLAGS) -D js-global=globalThis --js $@ --main Background --macro exclude\(\'HookBingTranslator\'\)
 
 $(HOOK): $(SRC)/HookBingTranslator.hx $(COMMON)
-	haxe $(HAXEFLAGS) -D js-global=window --js $@ --main HookBingTranslator -D js-classic
+	haxe $(HAXEFLAGS) --js $@ --main HookBingTranslator -D js-classic
 
 $(CONTENT): $(SRC)/ContentScript.hx $(COMMON)
-	haxe $(HAXEFLAGS) -D js-global=window --js $@ --main ContentScript
+	haxe $(HAXEFLAGS) --js $@ --main ContentScript
 
 $(POPUPJS): $(SRC)/Popup.hx $(COMMON)
-	haxe $(HAXEFLAGS) -D js-global=window --js $@ --main Popup
+	haxe $(HAXEFLAGS) --js $@ --main Popup
 
 $(POPUPCSS): $(POPUPCSS:%.css=%.hss)
 	hss $<

@@ -22,7 +22,6 @@ body {
 		color : $color-font;
 		user-select: none;
 		cursor : pointer;
-		margin-top : -1px;
 		&:hover {
 			background-color : lighten($color-gray, 20%);
 		}
@@ -40,7 +39,7 @@ body {
 			cursor : pointer;
 			accent-color : CSS($color-enable);
 			&:checked {
-				box-shadow : $color-background 0 0 0 1px, $color-enable 0 0 0 2px;
+				box-shadow : $color-background 0 0 0 0.75pt, $color-enable 0 0 0 1.5pt;
 			}
 			&[disabled] {
 				box-shadow : none;

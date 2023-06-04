@@ -13,7 +13,6 @@ body {
 	color : #696969;
 	user-select : none;
 	cursor : pointer;
-	margin-top : -1px;
 }
 #menumain > label:hover {
 	background-color : #DCDCDC;
@@ -33,7 +32,7 @@ body {
 	accent-color : #00885a;
 }
 #menumain > label > input[type=checkbox]:checked {
-	box-shadow : white 0 0 0 1px, #00885a 0 0 0 2px;
+	box-shadow : white 0 0 0 0.75pt, #00885a 0 0 0 1.5pt;
 }
 #menumain > label > input[type=checkbox][disabled] {
 	box-shadow : none;

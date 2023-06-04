@@ -33,7 +33,14 @@ class Popup {
 			label.querySelector("input").removeAttribute(value);
 		}
 	}
-	static uiSync() {
+	static main() {
+		document.querySelector("#menumain").onclick = function(e) {
+			let target = e.target;
+			if(target.tagName != "INPUT") {
+				return;
+			}
+			Popup.onChecked(target.parentElement,target.checked);
+		};
 		chrome.storage.local.get(["nosound","disabled"],function(stores) {
 			let menu = document.querySelector("#menumain");
 			if(stores.nosound) {
@@ -44,16 +51,6 @@ class Popup {
 				Popup.setAttribute(menu.children[1],"disabled",true);
 			}
 		});
-	}
-	static main() {
-		document.querySelector("#menumain").onclick = function(e) {
-			let target = e.target;
-			if(target.tagName != "INPUT") {
-				return;
-			}
-			Popup.onChecked(target.parentElement,target.checked);
-		};
-		Popup.uiSync();
 	}
 }
 {
