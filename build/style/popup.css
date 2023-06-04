@@ -1,0 +1,48 @@
+body {
+	font-size : 12pt;
+	font-family : Arial, SimSun;
+	background : white;
+	padding : 0;
+	margin : 3pt;
+}
+#menumain > label {
+	display : block;
+	text-align : left;
+	width : 60pt;
+	padding : 6pt 12pt;
+	color : #696969;
+	user-select : none;
+	cursor : pointer;
+	margin-top : -1px;
+}
+#menumain > label:hover {
+	background-color : #DCDCDC;
+}
+#menumain > label[checked] {
+	color : #00885a;
+}
+#menumain > label[disabled] {
+	color : #a9a9a9;
+	cursor : auto;
+	pointer-events : none;
+	background-color : white;
+}
+#menumain > label > input[type=checkbox] {
+	float : right;
+	cursor : pointer;
+	accent-color : #00885a;
+}
+#menumain > label > input[type=checkbox]:checked {
+	box-shadow : white 0 0 0 1px, #00885a 0 0 0 2px;
+}
+#menumain > label > input[type=checkbox][disabled] {
+	box-shadow : none;
+}
+#menumain > label > a {
+	color : #696969;
+	text-align : center;
+	display : block;
+}
+#menumain > label > a:hover, #menumain > label > a:focus {
+	color : #00885a;
+}

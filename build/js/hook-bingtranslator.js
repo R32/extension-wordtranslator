@@ -22,9 +22,18 @@ class hookbt {
 			}
 			hookbt.tid = window.setTimeout(hookbt.rolling,300,20);
 		}
-		document.getElementById("tta_playiconsrc").click();
+		if(hookbt.sound) {
+			document.getElementById("tta_playiconsrc").click();
+		}
+	}
+	static main() {
+		chrome.storage.local.get("nosound",function(attr) {
+			hookbt.sound = !attr.nosound;
+		});
 	}
 }
 {
 }
 hookbt.tid = -1;
+hookbt.sound = true;
+hookbt.main();

@@ -38,6 +38,9 @@ class Background {
 		});
 	}
 	static main() {
+		let enablejs = true;
+		let nop = function(_) {
+		};
 		if(chrome.i18n.getUILanguage() == "zh-CN") {
 			Background.bingUrl = "https://" + "cn." + Background.baseUrl;
 		} else {
@@ -57,6 +60,23 @@ class Background {
 			case 1:
 				Background.doResponse(query[1]);
 				break;
+			case 2:
+				let args = query[1].split(":");
+				let on = args[1] != "true";
+				switch(args[0]) {
+				case "disabled":
+					enablejs = on;
+					break;
+				case "nosound":
+					if(Background.bingId != -1) {
+						chrome.scripting.executeScript({ target : { tabId : Background.bingId}, args : [on], func : function(x) {
+							hookbt.sound = x;
+						}}).catch(nop);
+					}
+					break;
+				default:
+				}
+				break;
 			}
 			return false;
 		});
@@ -67,23 +87,26 @@ class Background {
 			default:
 				return;
 			}
-			let inject = "js/content-script.js";
-			if(t.url.indexOf(Background.baseUrl,7) >= 7) {
-				inject = "js/hook-bingtranslator.js";
+			let injectjs = "js/content-script.js";
+			let hookpage = t.url.indexOf(Background.baseUrl,7) >= 7;
+			if(!enablejs && !hookpage) {
+				return;
+			}
+			if(hookpage) {
+				injectjs = "js/hook-bingtranslator.js";
 				if(Background.bingId == -1) {
 					Background.bingId = t.tabId;
 				}
 			}
-			chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : [inject]}).catch(function(_) {
-			});
+			chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : [injectjs]}).catch(nop);
 		});
 		chrome.tabs.onRemoved.addListener(function(tid,_) {
 			if(tid == Background.bingId) {
 				Background.bingId = -1;
 			}
 		});
-		chrome.action.onClicked.addListener(function(tab) {
-			Background.loadpage(chrome.runtime.getURL("options.html"));
+		chrome.storage.local.get("disabled",function(attr) {
+			enablejs = !attr.disabled;
 		});
 	}
 }
