@@ -4,7 +4,7 @@ using ESXTools;
 
 class ContentScript {
 	public static function main() {
-		if (document.body == null)
+		if (document.body == null || document.documentElement.lang.startsWith("zh"))
 			return;
 		var id = "yangmaowords";
 		var movpos = {x : 0, y : 0} // position of button for moving

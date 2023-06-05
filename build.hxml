@@ -1,6 +1,7 @@
 -cp src
 -dce full
 -D js-es=6
+-D js-global=window
 -D analyzer-optimize
 -D old-error-format
 -D no-traces
@@ -16,17 +17,14 @@
 -js build/js/background.js
 
 --next
--D js-global=window
 -main ContentScript
 -js build/js/content-script.js
 
 --next
--D js-global=window
 -D js-classic
 -main HookBingTranslator
 -js build/js/hook-bingtranslator.js
 
 --next
--D js-global=window
 -main Popup
 -js build/js/popup.js

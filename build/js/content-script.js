@@ -2,7 +2,7 @@
 (function ($global) { "use strict";
 class ContentScript {
 	static main() {
-		if(document.body == null) {
+		if(document.body == null || document.documentElement.lang.startsWith("zh")) {
 			return;
 		}
 		let movpos_y;
