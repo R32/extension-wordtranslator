@@ -3,8 +3,11 @@ package;
 using ESXTools;
 
 class ContentScript {
+	static inline function skipped() {
+		return document.documentElement.lang.startsWith("zh") && chrome.I18n.getUILanguage().startsWith("zh");
+	}
 	public static function main() {
-		if (document.body == null || document.documentElement.lang.startsWith("zh"))
+		if (document.body == null || skipped())
 			return;
 		var id = "yangmaowords";
 		var movpos = {x : 0, y : 0} // position of button for moving

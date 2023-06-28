@@ -46,7 +46,7 @@ class Background {
 			});
 			return;
 		}
-		Tabs.query({ url : bingUrl + "*" }, function(list) {
+		Tabs.query({ url : "https://*." +  baseUrl + "*" }, function(list) {
 			if (list.length == 0) {
 				doResponse(null);
 				loadpage(bingUrl);

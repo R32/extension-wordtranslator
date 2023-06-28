@@ -27,7 +27,7 @@ class Background {
 			});
 			return;
 		}
-		chrome.tabs.query({ url : Background.bingUrl + "*"},function(list) {
+		chrome.tabs.query({ url : "https://*." + Background.baseUrl + "*"},function(list) {
 			if(list.length == 0) {
 				Background.doResponse(null);
 				Background.loadpage(Background.bingUrl);
