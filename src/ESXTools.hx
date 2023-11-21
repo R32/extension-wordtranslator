@@ -3,6 +3,12 @@ package;
 @:pure
 extern class ESXTools {
 #if js
+	// es3
+	static inline function replace( s : String, sub : String, by : String ) : String
+	{
+		return (cast s).replace(sub, by);
+	}
+
 	// es5
 	static inline function trim( s : String ) : String
 	{
@@ -37,6 +43,16 @@ extern class ESXTools {
 	overload static inline function endsWith( s : String, sub : String, endpos : Int ) : Bool
 	{
 		return (cast s).endsWith(sub, endpos);
+	}
+
+	// chrome 41, firefox 40, edge 12, safari 9, nodejs 4.0
+	overload static inline function includes( s : String, sub : String ) : Bool
+	{
+		return (cast s).includes(sub);
+	}
+	overload static inline function includes( s : String, sub : String, pos : Int ) : Bool
+	{
+		return (cast s).includes(sub, pos);
 	}
 
 	// does it safe?

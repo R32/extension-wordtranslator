@@ -25,8 +25,19 @@
 		"tabs",
 		"storage",
 		"scripting",
-		"webNavigation"
+		"webNavigation",
+		"declarativeNetRequest" // uses declarativeNetRequest to instead of webRequestBlocking.
 	],
+
+	// docs : https://sunnyzhou-1024.github.io/chrome-extension-docs/extensions/declarativeNetRequest.html#type-RuleCondition
+	"declarative_net_request": {
+		"rule_resources": [{
+			"id": "redirect-googleapi",
+			"enabled": false,
+			"path": "redirect-googleapi.json"
+		}]
+	},
+
 	"host_permissions": [
 		"<all_urls>"
 	]

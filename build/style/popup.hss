@@ -17,7 +17,7 @@ body {
 	> label {
 		display : block;
 		text-align : left;
-		width : $font-size * 5;
+		width : $font-size * 10;
 		padding : $padding-size $padding-size * 2;
 		color : $color-font;
 		user-select: none;

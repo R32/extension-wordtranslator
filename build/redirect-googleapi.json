@@ -1,0 +1,29 @@
+[
+	{
+		"id": 1,
+		"priority": 2,
+		"condition": {
+			"regexFilter": "https://www\\.google\\.com/recaptcha/api\\.js(.*)",
+			"resourceTypes": ["script"]
+		},
+		"action": {
+			"type": "redirect",
+			"redirect": {
+				"regexSubstitution": "https://recaptcha.net/recaptcha/api.js\\1"
+			}
+		}
+	}, {
+		"id": 2,
+		"priority": 2,
+		"condition": {
+			"regexFilter": "https://(ajax|fonts)\\.googleapis\\.com/(.*)",
+			"resourceTypes": ["stylesheet", "script", "image", "font", "object", "xmlhttprequest"]
+		},
+		"action": {
+			"type": "redirect",
+			"redirect": {
+				"regexSubstitution": "https://\\1.proxy.ustclug.org/\\2"
+			}
+		}
+	}
+]

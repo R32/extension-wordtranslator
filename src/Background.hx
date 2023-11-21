@@ -41,8 +41,7 @@ class Background {
 					HookBingTranslator.run(s);
 				}
 			}).catchError(function(_) {
-				bingId = -1;
-				doResponse(null);
+				doResponse("executeScript error");
 			});
 			return;
 		}
@@ -80,16 +79,16 @@ class Background {
 				return lazySendResponse != null; // return true to make lazySendResponse available
 			case Control:
 				var args = query.value.split(":");
-				var on = args[1] != "true";
+				var disabled = args[1] != "true";
 				switch (args[0]) {
 				case KDISBLED:
-					LOG('enablejs :$enablejs, on : $on');
-					enablejs = on;
+					LOG('enablejs :$enablejs, disabled : $disabled');
+					enablejs = disabled;
 				case KNOSOUND if (bingId != -1):
-					LOG('sound : $on');
+					LOG('sound : $disabled');
 					chrome.Scripting.executeScript({
 						target : {tabId : bingId},
-						args : [on],
+						args : [disabled],
 						func : function(x) {
 							HookBingTranslator.sound = x;
 						}
