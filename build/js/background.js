@@ -61,15 +61,14 @@ class Background {
 				break;
 			case 2:
 				let args = query[1].split(":");
-				let disabled = args[1] != "true";
 				switch(args[0]) {
 				case "disabled":
-					enablejs = disabled;
+					enablejs = args[1] != "true";
 					break;
-				case "nosound":
+				case "voices":
 					if(Background.bingId != -1) {
-						chrome.scripting.executeScript({ target : { tabId : Background.bingId}, args : [disabled], func : function(x) {
-							hookbt.sound = x;
+						chrome.scripting.executeScript({ target : { tabId : Background.bingId}, args : [args[1]], func : function(s) {
+							hookbt.level = (s | 0);
 						}}).catch(nop);
 					}
 					break;

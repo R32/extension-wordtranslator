@@ -21,12 +21,11 @@ extern function sendMessage( msg : Message, ?callback : Dynamic->Void ) : Void;
 
 enum abstract StoreKey(String) to String {
 	var KDISBLED = "disabled";
-	var KNOSOUND = "nosound";
+	var KVOICES = "voices";
 	var KREDIRECT = "redirect";
 }
-
-typedef StoreNoSound = {
-	nosound : Bool
+typedef StoreVoices = {
+	voices : String // if "0x100" then disabled,
 }
 typedef StoreDisabled = {
 	disabled : Bool
@@ -34,4 +33,4 @@ typedef StoreDisabled = {
 typedef StoreRedirect = {
 	redirect : Bool
 }
-typedef StoreAll = StoreNoSound & StoreDisabled & StoreRedirect;
+typedef StoreAll = StoreVoices & StoreDisabled & StoreRedirect;

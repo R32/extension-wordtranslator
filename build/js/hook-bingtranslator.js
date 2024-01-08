@@ -14,6 +14,7 @@ class hookbt {
 	}
 	static run(ens) {
 		if(ens != null) {
+			hookbt.pass = hookbt.detects(ens);
 			let input = document.getElementById("tta_input_ta");
 			input.value = ens;
 			input.click();
@@ -22,18 +23,44 @@ class hookbt {
 			}
 			hookbt.tid = window.setTimeout(hookbt.rolling,300,20);
 		}
-		if(hookbt.sound) {
+		if(hookbt.level < 255 && hookbt.pass) {
 			document.getElementById("tta_playiconsrc").click();
 		}
 	}
+	static detects(ens) {
+		let n = hookbt.level & 255;
+		if(n == 0) {
+			return false;
+		}
+		if(n > 3) {
+			return true;
+		}
+		let i = 0;
+		let len = ens.length;
+		let count = (1 << n) - 1;
+		while(i < len && ens.charCodeAt(i) == 32) ++i;
+		while(len > i && ens.charCodeAt(len - 1) == 32) --len;
+		if(i < len && ens.charCodeAt(i) > 255) {
+			return len - i <= count + 1;
+		}
+		while(i < len) {
+			if(ens.charCodeAt(i) == 32) {
+				if(count-- == 0) {
+					return false;
+				}
+			}
+			++i;
+		}
+		return true;
+	}
 	static main() {
-		chrome.storage.local.get("nosound",function(attr) {
-			hookbt.sound = !attr.nosound;
+		chrome.storage.local.get("voices",function(attr) {
+			hookbt.level = attr.voices != null ? (attr.voices | 0) : 2;
 		});
 	}
 }
 {
 }
 hookbt.tid = -1;
-hookbt.sound = true;
+hookbt.level = 2;
 hookbt.main();

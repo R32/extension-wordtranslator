@@ -27,6 +27,10 @@ body {
 		}
 		&[checked] {
 			color : $color-enable;
+
+			> input[type=range] {
+				accent-color : $color-enable;
+			}
 		}
 		&[disabled] {
 			color : $color-gray;
@@ -34,15 +38,15 @@ body {
 			pointer-events : none;
 			background-color : $color-background;
 		}
-		> input[type=checkbox] {
+		> input {
 			float : right;
 			cursor : pointer;
-			accent-color : CSS($color-enable);
-			&:checked {
-				box-shadow : $color-background 0 0 0 0.75pt, $color-enable 0 0 0 1.5pt;
+			&[type=checkbox] {
+				accent-color : $color-enable;
 			}
-			&[disabled] {
-				box-shadow : none;
+			&[type=range] {
+				width : $font-size * 6.5;
+				accent-color : $color-gray;
 			}
 		}
 		> a {

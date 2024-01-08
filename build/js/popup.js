@@ -18,20 +18,20 @@ class Popup {
 		chrome.declarativeNetRequest.updateEnabledRulesets(obj).catch(function(_) {
 		});
 	}
-	static onChecked(label,checked) {
+	static onChecked(label,checked,extra) {
 		if(checked) {
 			label.setAttribute("checked","");
 		} else {
 			label.removeAttribute("checked");
 		}
 		let menu = document.querySelector("#menumain");
-		let ui_redirect = menu.children[2];
+		let ui_redirect = menu.children[1];
 		let ui_enable = menu.children[0];
-		let ui_sound = menu.children[1];
-		let disabled = !checked;
+		let ui_sound = menu.children[2];
 		switch(Popup.childIndex(label)) {
 		case 0:
 			if(label == ui_enable) {
+				let disabled = !checked;
 				Popup.setAttribute(ui_sound,"disabled",disabled);
 				Popup.setAttribute(ui_redirect,"disabled",disabled);
 				chrome.storage.local.set({ disabled : disabled},function() {
@@ -47,18 +47,16 @@ class Popup {
 			}
 			break;
 		case 1:
-			if(label == ui_sound) {
-				chrome.storage.local.set({ nosound : disabled},function() {
-					chrome.runtime.sendMessage([2,"nosound" + ":" + (disabled == null ? "null" : "" + disabled)]);
-				});
-			}
-			break;
-		case 2:
 			if(label == ui_redirect) {
 				chrome.storage.local.set({ redirect : checked},function() {
 					Popup.updateRedirect(checked);
 				});
 			}
+			break;
+		case 2:
+			chrome.storage.local.set({ voices : extra},function() {
+				chrome.runtime.sendMessage([2,"voices" + ":" + extra]);
+			});
 			break;
 		default:
 		}
@@ -73,25 +71,43 @@ class Popup {
 		}
 	}
 	static main() {
-		document.querySelector("#menumain").onclick = function(e) {
+		let menu = document.querySelector("#menumain");
+		menu.onclick = function(e) {
 			let target = e.target;
-			if(target.tagName != "INPUT") {
+			let parent = target.parentElement;
+			let voices = menu.children[2];
+			if(parent == menu && target == voices) {
+				e.preventDefault();
+				let input = voices.querySelector("input");
+				let checked = !voices.hasAttribute("checked");
+				let value = checked ? input.value : "" + ((input.value | 0) + 256);
+				Popup.onChecked(voices,checked,value);
 				return;
 			}
-			Popup.onChecked(target.parentElement,target.checked);
-		};
-		chrome.storage.local.get(["nosound","disabled","redirect"],function(stores) {
-			let menu = document.querySelector("#menumain");
-			if(stores.nosound) {
-				Popup.setAttribute(menu.children[1],"checked",false);
+			if(target.type == "checkbox") {
+				Popup.onChecked(parent,target.checked);
+			} else if(parent == voices) {
+				Popup.onChecked(parent,true,target.value);
 			}
+		};
+		chrome.storage.local.get(["voices","disabled","redirect"],function(stores) {
+			let menu = document.querySelector("#menumain");
+			let ui_voices = menu.children[2];
+			let ui_redirect = menu.children[1];
 			if(stores.disabled) {
 				Popup.setAttribute(menu.children[0],"checked",false);
-				Popup.setAttribute(menu.children[1],"disabled",true);
-				Popup.setAttribute(menu.children[2],"disabled",true);
+				Popup.setAttribute(ui_redirect,"disabled",true);
+				Popup.setAttribute(ui_voices,"disabled",true);
 			}
 			if(stores.redirect) {
-				Popup.setAttribute(menu.children[2],"checked",true);
+				Popup.setAttribute(ui_redirect,"checked",true);
+			}
+			if(stores.voices != null) {
+				let n = (stores.voices | 0);
+				if(n > 255) {
+					Popup.setAttribute(ui_voices,"checked",false);
+				}
+				ui_voices.querySelector("input").value = "" + (n & 255);
 			}
 		});
 	}

@@ -60,5 +60,10 @@ extern class ESXTools {
 	{
 		return d.toString();
 	}
+
+	static inline function toInt( s : String ) : Int
+	{
+		return js.Syntax.code("({0} | 0)", s);
+	}
 #end
 }

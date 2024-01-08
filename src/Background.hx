@@ -79,18 +79,18 @@ class Background {
 				return lazySendResponse != null; // return true to make lazySendResponse available
 			case Control:
 				var args = query.value.split(":");
-				var disabled = args[1] != "true";
 				switch (args[0]) {
 				case KDISBLED:
+					var disabled = args[1] != "true";
 					LOG('enablejs :$enablejs, disabled : $disabled');
 					enablejs = disabled;
-				case KNOSOUND if (bingId != -1):
-					LOG('sound : $disabled');
+				case KVOICES if (bingId != -1):
+					LOG('voices : ${args[1]}');
 					chrome.Scripting.executeScript({
 						target : {tabId : bingId},
-						args : [disabled],
-						func : function(x) {
-							HookBingTranslator.sound = x;
+						args : [args[1]],
+						func : function(s) {
+							HookBingTranslator.level = ESXTools.toInt(s);
 						}
 					}).catchError(nop);
 				default:

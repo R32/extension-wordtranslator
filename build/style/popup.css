@@ -20,22 +20,25 @@ body {
 #menumain > label[checked] {
 	color : #00885a;
 }
+#menumain > label[checked] > input[type=range] {
+	accent-color : #00885a;
+}
 #menumain > label[disabled] {
 	color : #a9a9a9;
 	cursor : auto;
 	pointer-events : none;
 	background-color : white;
 }
-#menumain > label > input[type=checkbox] {
+#menumain > label > input {
 	float : right;
 	cursor : pointer;
+}
+#menumain > label > input[type=checkbox] {
 	accent-color : #00885a;
 }
-#menumain > label > input[type=checkbox]:checked {
-	box-shadow : white 0 0 0 0.75pt, #00885a 0 0 0 1.5pt;
-}
-#menumain > label > input[type=checkbox][disabled] {
-	box-shadow : none;
+#menumain > label > input[type=range] {
+	width : 78pt;
+	accent-color : #a9a9a9;
 }
 #menumain > label > a {
 	color : #696969;
