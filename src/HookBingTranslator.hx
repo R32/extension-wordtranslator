@@ -17,12 +17,17 @@ class HookBingTranslator {
 	static function rolling( lvl : Int ) {
 		tid = -1;
 		var cur = fromId(TOUT).value;
-		var len = cur.length;
 		if (lvl < 0) {
 			cur = chrome.I18n.getUILanguage() == "zh-CN" ? "查词失败" : "query failed";
-		} else if (cur.endsWith("...") || cur == " ") {
-			tid = window.setTimeout(rolling, 300, lvl - 1);
-			return;
+		} else {
+			var i = 0;
+			var len = cur.length;
+			while (i < len && cur.fastCodeAt(i) == " ".code)
+				i++;
+			if (i == len || cur.endsWith("...")) {
+				tid = window.setTimeout(rolling, 300, lvl - 1);
+				return;
+			}
 		}
 		LOG('(rolling)runtime.sendMessage({value : $cur, kind : respone})');
 		sendMessage(new Message(Respone, cur));
@@ -80,11 +85,11 @@ class HookBingTranslator {
 	}
 
 	static inline function voice() {
-		document.getElementById(TVOICE).click();
+		fromId(TVOICE).click();
 	}
 
 	static inline function fromId(id) : TextAreaElement {
-		return cast document.getElementById(id);
+		return js.Syntax.code(id);
 	}
 
 	static function main() {
