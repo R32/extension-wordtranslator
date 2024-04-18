@@ -4,6 +4,20 @@ body {
 	background : white;
 	padding : 0;
 	margin : 3pt;
+	text-align : center;
+}
+body > a {
+	font-size : 9pt;
+	color : #696969;
+}
+body > a:visited {
+	color : #696969;
+}
+body > a:hover {
+	color : #00885a;
+}
+#menumain {
+	margin-bottom : 3pt;
 }
 #menumain > label {
 	display : block;

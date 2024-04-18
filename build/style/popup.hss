@@ -11,9 +11,21 @@ body {
 	background : $color-background;
 	padding : 0;
 	margin : 3pt;
+	text-align : center;
+	> a {
+		font-size : $font-size * .75;
+		color : $color-font;
+		&:visited {
+			color : $color-font;
+		}
+		&:hover {
+			color : $color-enable;
+		}
+	}
 }
 
 #menumain {
+	margin-bottom : $padding-size * .5;
 	> label {
 		display : block;
 		text-align : left;
