@@ -12,6 +12,8 @@ class HookBingTranslator {
 
 	static inline var TVOICE = "tta_playiconsrc";
 
+	static var echange = new Event("change"); // without {bubble : true}
+
 	static var tid = -1;
 
 	static function rolling( lvl : Int ) {
@@ -43,7 +45,7 @@ class HookBingTranslator {
 			pass = detects(ens);
 			var input = fromId(TIN);
 			input.value = ens;
-			input.click();
+			input.dispatchEvent(echange);
 			if (tid > 0)
 				window.clearTimeout(tid);
 			tid = window.setTimeout(rolling, 300, 20); // 6 seconds

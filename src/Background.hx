@@ -100,26 +100,41 @@ class Background {
 		});
 
 		chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {
-			switch(t.url.substring(0, t.url.indexOf(":"))) {
-			case "http", "https" , "file":
-			default:
+			var scheme = t.url.substring(0, 4);
+			if (!(scheme == "http" || scheme == "file"))
+				return;
+			var ishook = t.url.indexOf(baseUrl, 7) > 0; // "http://".length
+			if (!ishook && enablejs) {
+				chrome.Scripting.executeScript({
+					target : {tabId : t.tabId},
+					files : ["js/content-script.js"],
+				}).catchError(nop);
 				return;
 			}
-			var injectjs = "js/content-script.js";
-			var hookpage = t.url.indexOf(baseUrl, 7) >= 7; // "http://".length
-			LOG('enablejs : $enablejs, ishookpage : $hookpage');
-			if (!enablejs && !hookpage)
+			// inject hook-bing.js even if enablejs == false
+			if (!ishook)
 				return;
-			if (hookpage) {
-				injectjs = "js/hook-bingtranslator.js";
-				if (bingId == -1)
-					bingId = t.tabId;
-			}
-			LOG('injectjs : $injectjs, page : ${t.url}');
+
+			if (bingId == -1)
+				bingId = t.tabId;
+
 			chrome.Scripting.executeScript({
 				target : {tabId : t.tabId},
-				files : [injectjs]
-			}).catchError(nop); // some invisible pages that you can't inject
+				files : ["js/hook-bingtranslator.js"],
+			}).catchError(nop);
+
+			chrome.Scripting.executeScript({
+				world : MAIN,
+				target : {tabId : t.tabId},
+				func : function() {
+					var tin : js.html.TextAreaElement = js.Syntax.code("tta_input_ta");
+					if (cast tin.onchange)
+						return;
+					tin.onchange = function( e : Event ) {
+						js.Syntax.code("!{0} && sj_evt.fire(RichTranslateHelper.inputTextchanged)", e.isTrusted);
+					}
+				}
+			}).catchError(nop);
 		});
 
 		chrome.Tabs.onRemoved.addListener(function(tid, _) {
