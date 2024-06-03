@@ -1,20 +1,25 @@
 body {
+	--color-gray : #a9a9a9;
+	--color-font : #696969;
+	--color-enable : #00885a;
+	--color-background : #ffffff;
+	--color-gray-lighten : #D9EDE6;
 	font-size : 12pt;
 	font-family : Arial, SimSun;
-	background : white;
+	background : var(--color-background);
 	padding : 0;
 	margin : 3pt;
 	text-align : center;
 }
 body > a {
 	font-size : 9pt;
-	color : #696969;
+	color : var(--color-font);
 }
 body > a:visited {
-	color : #696969;
+	color : var(--color-font);
 }
 body > a:hover {
-	color : #00885a;
+	color : var(--color-enable);
 }
 #menumain {
 	margin-bottom : 3pt;
@@ -24,41 +29,48 @@ body > a:hover {
 	text-align : left;
 	width : 120pt;
 	padding : 6pt 12pt;
-	color : #696969;
+	color : var(--color-font);
 	user-select : none;
 	cursor : pointer;
 }
 #menumain > label:hover {
-	background-color : #DCDCDC;
+	background-color : var(--color-gray-lighten);
 }
 #menumain > label[checked] {
-	color : #00885a;
+	color : var(--color-enable);
 }
 #menumain > label[checked] > input[type=range] {
-	accent-color : #00885a;
+	accent-color : var(--color-enable);
 }
 #menumain > label[disabled] {
-	color : #a9a9a9;
+	color : var(--color-gray);
 	cursor : auto;
 	pointer-events : none;
-	background-color : white;
+	background-color : var(--color-background);
 }
 #menumain > label > input {
 	float : right;
 	cursor : pointer;
 }
 #menumain > label > input[type=checkbox] {
-	accent-color : #00885a;
+	accent-color : var(--color-enable);
 }
 #menumain > label > input[type=range] {
 	width : 78pt;
-	accent-color : #a9a9a9;
+	accent-color : var(--color-gray);
 }
 #menumain > label > a {
-	color : #696969;
+	color : var(--color-font);
 	text-align : center;
 	display : block;
 }
 #menumain > label > a:hover, #menumain > label > a:focus {
-	color : #00885a;
+	color : var(--color-enable);
+}
+@media screen and (prefers-color-scheme : dark) {
+	body {
+		--color-enable : #51e3b2;
+		--color-background : #343D46;
+		--color-gray-lighten : #385656;
+	}
 }

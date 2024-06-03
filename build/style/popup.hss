@@ -1,25 +1,31 @@
-$padding-size     : 6pt;  /* PT = PX * 72 / 96 */
+$padding-size     : 6pt;     /* PT = PX * 72 / 96 */
 $font-size        : 12pt;
-$color-gray       : #a9a9a9;
-$color-font       : #696969;
-$color-enable     : #00885a;
-$color-background : white;
+$color-gray       : #a9a9a9; /* disabled   */
+$color-font       : #696969; /* switch off */
+$color-enable     : #00885a; /* switch on  */
+$color-background : #ffffff;
 
 body {
+	--color-gray : $color-gray;
+	--color-font : $color-font;
+	--color-enable : $color-enable;
+	--color-background : $color-background;
+	--color-gray-lighten : alphamix($color-enable, 0.15, $color-background);
+
 	font-size : $font-size;
 	font-family : Arial, SimSun;
-	background : $color-background;
+	background : var(--color-background);
 	padding : 0;
 	margin : 3pt;
 	text-align : center;
 	> a {
 		font-size : $font-size * .75;
-		color : $color-font;
+		color : var(--color-font);
 		&:visited {
-			color : $color-font;
+			color : var(--color-font);
 		}
 		&:hover {
-			color : $color-enable;
+			color : var(--color-enable);
 		}
 	}
 }
@@ -31,43 +37,53 @@ body {
 		text-align : left;
 		width : $font-size * 10;
 		padding : $padding-size $padding-size * 2;
-		color : $color-font;
+		color : var(--color-font);
 		user-select: none;
 		cursor : pointer;
 		&:hover {
-			background-color : lighten($color-gray, 20%);
+			background-color : var(--color-gray-lighten);
 		}
 		&[checked] {
-			color : $color-enable;
+			color : var(--color-enable);
 
 			> input[type=range] {
-				accent-color : $color-enable;
+				accent-color : var(--color-enable);
 			}
 		}
 		&[disabled] {
-			color : $color-gray;
+			color : var(--color-gray);
 			cursor : auto;
 			pointer-events : none;
-			background-color : $color-background;
+			background-color : var(--color-background);
 		}
 		> input {
 			float : right;
 			cursor : pointer;
 			&[type=checkbox] {
-				accent-color : $color-enable;
+				accent-color : var(--color-enable);
 			}
 			&[type=range] {
 				width : $font-size * 6.5;
-				accent-color : $color-gray;
+				accent-color : var(--color-gray);
 			}
 		}
 		> a {
-			color : $color-font;
+			color : var(--color-font);
 			text-align : center;
 			display : block;
 			&:hover, &:focus {
-				color : $color-enable;
+				color : var(--color-enable);
 			}
 		}
+	}
+}
+
+@media screen and (prefers-color-scheme : dark) {
+	$color-enable     : #51e3b2;
+	$color-background : #343D46;
+	body {
+		--color-enable : $color-enable;
+		--color-background : $color-background;
+		--color-gray-lighten : alphamix($color-enable, 0.15, $color-background);
 	}
 }

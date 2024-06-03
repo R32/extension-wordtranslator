@@ -14,12 +14,7 @@
 
 ### 安装
 
-插件仅适用于 chromium 类型的浏览器, 例如 : `ungoogled chromium`(推荐), `chrome`, 或者 `微软 edge`
-
-> 对于 chromium 浏览器, 建议**关闭** `设置 -> 隐私和安全 -> 关闭所有窗口时清除 Cookie 及网站数据` 选项,
-> 不然每次都要重新设置翻译窗口的语言很麻烦
->
-> 我没有试过 firefox, 只是听说 firefox 不允许以本地文件的形式安装插件
+插件仅适用于 chromium 类型的浏览器, 例如 : `brave`(推荐), `ungoogled chromium`, `微软 edge` 或者 `chrome`
 
 1. **[下载](https://github.com/R32/extension-wordtranslator/archive/master.zip)** 并且 **解压**, 或直接 `git clone` 克隆这个项目
 
@@ -37,13 +32,38 @@
 
 ```
 启用             [x]
-重定向 GoogleAPI [x]
+重定向 GoogleAPI [ ]
 发音     (0-2-4-8-~)
 ```
 注意: 发音 **不是** 用于音量, 而用于表示单词数量, 其范围为 `[0, 2, 4, 8, 无限]`,
 例如当值为 2 时, 那么选中的英文单词不超过 2 个时下才会发音
 
-对于 `重定向 GoogleAPI` 可自己添加或修改目录中的 [`redirect-googleapi.json`](build/redirect-googleapi.json) 文件
+对于 `重定向 GoogleAPI`, 目前仅有两个可用, 分别为 :
+
+- 用于 recaptcha 验证
+
+- 对 googleapi 资源的引用, 例如 脚本, 图片, 以及字体
+
+
+也可自己添加或修改目录中的 [`redirect-googleapi.json`](build/redirect-googleapi.json) 文件,
+例如 : 重定向 github 单个文件的下载
+
+```json
+{
+	"id": 3,
+	"priority": 2,
+	"condition": {
+		"regexFilter": "https://raw.githubusercontent.com/(.*)",
+		"resourceTypes": ["main_frame"]
+	},
+	"action": {
+		"type": "redirect",
+		"redirect": {
+			"regexSubstitution": "https://cdn.githubraw.com/\\1"
+		}
+	}
+}
+```
 
 ### 常见问题
 
@@ -58,5 +78,3 @@
 - 2024-1-8 : 由单词的数量 `[0,2,4,8,~]` 决定是否发音
 
 - 2023-11-21 `@fbabd93`: 添加了 googleapi 的重定向功能(默认为关闭, 要自己点击插件图标的弹出窗口)
-
-    目前两个重定向一个是用于 recaptcha 验证, 另一个对 googleapi 脚本的引用
