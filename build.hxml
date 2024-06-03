@@ -4,6 +4,7 @@
 -D js-global=window
 -D analyzer-optimize
 -D old-error-format
+-D message.reporting=classic
 -D no-traces
 
 -lib chrome-extension-v3

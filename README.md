@@ -46,7 +46,7 @@
 
 
 也可自己添加或修改目录中的 [`redirect-googleapi.json`](build/redirect-googleapi.json) 文件,
-例如 : 重定向 github 单个文件的下载
+例如 : 重定向 github 单个文件的下载(需要复制链接到地址栏, 或者点击那个 `raw` 的按钮才有效)
 
 ```json
 {

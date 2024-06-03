@@ -21,14 +21,14 @@ class Popup {
 		return index;
 	}
 
-	static function updateRedirect( enable : Bool ) {
+	static function flushRedirect( enable : Bool ) {
 		var key = enable ? "enableRulesetIds" : "disableRulesetIds";
 		var obj = {};
 		Reflect.setField(obj, key, [RedirectGoogleAPI]);
 		DeclarativeNetRequest.updateEnabledRulesets(obj).catchError(function(_){});
 	}
 
-	static function onChecked( label : DOMElement, checked : Bool, ?extra : String ) {
+	static function update( label : DOMElement, checked : Bool, ?extra : String ) {
 		if (checked) {
 			label.setAttribute(CHECKED, "");
 		} else {
@@ -41,24 +41,24 @@ class Popup {
 		switch (childIndex(label)) {
 		case 0 if (label == ui_enable):
 			var disabled = !checked;
-			setDisabled(ui_sound, disabled);
-			setDisabled(ui_redirect, disabled);
+			setUiDisabled(ui_sound, disabled);
+			setUiDisabled(ui_redirect, disabled);
 			var value : StoreDisabled = {disabled : disabled};
 			Storage.local.set(value, function() {
 				sendMessage(new Message(Control, KDISBLED + ":" + disabled));
 			});
 			// update googleapi redirecting
 			if (disabled) {
-				updateRedirect(false);
+				flushRedirect(false);
 			} else {
 				Storage.local.get([KREDIRECT], function( stored : StoreRedirect ) {
-					updateRedirect(stored.redirect);
+					flushRedirect(stored.redirect);
 				});
 			}
 		case 1 if (label == ui_redirect):
 			var value : StoreRedirect = {redirect : checked};
 			Storage.local.set(value, function() {
-				updateRedirect(checked);
+				flushRedirect(checked);
 			});
 		case 2:
 			var value : StoreVoices = {voices : extra};
@@ -77,10 +77,10 @@ class Popup {
 			label.querySelector("input").removeAttribute(value);
 		}
 	}
-	static inline function setDisabled( label : DOMElement, enable : Bool ) {
+	static inline function setUiDisabled( label : DOMElement, enable : Bool ) {
 		setAttribute(label, DISABLED, enable);
 	}
-	static inline function setChecked( label : DOMElement, enable : Bool ) {
+	static inline function setUiChecked( label : DOMElement, enable : Bool ) {
 		setAttribute(label, CHECKED, enable);
 	}
 
@@ -95,13 +95,13 @@ class Popup {
 				var input : InputElement = cast voices.querySelector("input");
 				var checked = !voices.hasAttribute(CHECKED); // manual toggle, because it's not checkbox
 				var value = checked ? input.value : "" + (ESXTools.toInt(input.value) + (1 << 8));
-				onChecked(voices, checked, value);
+				update(voices, checked, value);
 				return;
 			}
 			if (target.type == "checkbox") {
-				onChecked(parent, target.checked);
+				update(parent, target.checked);
 			} else if (parent == voices) {
-				onChecked(parent, true, target.value);
+				update(parent, true, target.value);
 			}
 		}
 		// init
@@ -110,17 +110,18 @@ class Popup {
 			var ui_voices = menu.sound;
 			var ui_redirect = menu.redirect;
 			if (stores.disabled) {
-				setChecked(menu.enable, false);
-				setDisabled(ui_redirect, true);
-				setDisabled(ui_voices, true);
+				setUiChecked(menu.enable, false);
+				setUiDisabled(ui_redirect, true);
+				setUiDisabled(ui_voices, true);
 			}
 			if (stores.redirect) {
-				setChecked(ui_redirect, true);
+				setUiChecked(ui_redirect, true);
+				flushRedirect(true);
 			}
 			if (stores.voices != null) {
 				var n = ESXTools.toInt(stores.voices);
 				if (n > 0xFF) {
-					setChecked(ui_voices, false);
+					setUiChecked(ui_voices, false);
 				}
 				var input : InputElement = cast ui_voices.querySelector("input");
 				input.value = "" + (n & 0xFF);

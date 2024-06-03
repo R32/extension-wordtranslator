@@ -17,6 +17,10 @@ class ContentScript {
 		if (button != null)
 			return;
 		button = HXX( <div id="{{ id }}">翻译</div> ); // TODO: a random word from localStorage wordlist
+
+		if (button.style == null) // for XML file
+			return;
+
 		button.style.cssText = "
 			position : absolute;
 			padding : 2px 4px;
