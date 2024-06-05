@@ -2,148 +2,145 @@ package;
 
 import chrome.Tabs;
 
-class Background {
+inline var BASE_URL = "bing.com/translator";
 
-	static var bingId = -1;
+inline function LANG() return chrome.I18n.getUILanguage();
 
-	static var baseUrl = "bing.com/translator";
+/*
+ * TODO : For non-persistent backends, the doc says : "do not rely on global variables",
+ * But that seems impossible to do it, because you can't store functions to "Storage.session".
+ */
+@:native("main") function main()
+{
+	var tabid = -1;
 
-	static var bingUrl : String;
+	var nop = function(_){};
 
-	static var lastWords : String;
+	var bturl = LANG() == "zh-CN" ? ("https://" + "cn." + BASE_URL) : "https://" + BASE_URL;
 
-	static var lazySendResponse : String->Void;
+	var enable = true; // Storage.local
 
-	static function loadpage( href : String, ?callback : Tab->Void ) {
-		Tabs.query({ url : href }, function(list) {
-			if (list.length > 0) {
-				Tabs.update(list[0].id, {active : true}, callback);
-				return;
-			}
-			Tabs.create({url : href}, callback);
-		});
+	var lazyrep : Dynamic->Void = null;
+
+	var lstword : String = null;
+
+	inline function FLUSH(id) {
+		tabid = id; // local
+		//// chrome.Storage.session.set({tabid : id}); // session store
 	}
 
-	static function doResponse( ret : String ) {
-		LOG('(doResponse) lastWords : $ret, lazySendResponse : ${null == lazySendResponse ? "null" : "function"}');
-		if (lazySendResponse != null)
-			lazySendResponse(ret); // disconnect
-		lazySendResponse = null;
-		lastWords = ret;
+	function response( zhs : String ) {
+		if (lazyrep == null)
+			return;
+		lazyrep(zhs);
+		lazyrep = null;
+		lstword = zhs;
 	}
 
-	static function translate( ens : String ) {
-		if (bingId != -1) {
+	function translate( ens : String ) {
+		if (tabid != -1) {
 			chrome.Scripting.executeScript({
-				target : {tabId : bingId},
+				target : {tabId : tabid},
 				args : [ens],
 				func : function(s) {
 					HookBingTranslator.run(s);
 				}
 			}).catchError(function(_) {
-				doResponse("executeScript error");
+				response(LANG() == "zh-CN" ? "出错了" : "something is wrong");
 			});
 			return;
 		}
-		Tabs.query({ url : "https://*." +  baseUrl + "*" }, function(list) {
-			if (list.length == 0) {
-				doResponse(null);
-				loadpage(bingUrl);
+		Tabs.query({ url : "https://*." +  BASE_URL + "*" }, function(list) {
+			var tab = list[0];
+			if (tab == null) {
+				response(null); // disconnect
+				Tabs.create({url : bturl, pinned : true});
 				return;
 			}
-			bingId = list[0].id;
+			FLUSH(tab.id);
 			translate(ens);
 		});
 	}
 
-	static function main() {
-		var enablejs = true;
-		var nop = function(_){};
-		if (chrome.I18n.getUILanguage() == "zh-CN") {
-			bingUrl = "https://" + "cn." + baseUrl;
-		} else {
-			bingUrl = "https://" + baseUrl;
-		}
-		chrome.Runtime.onMessage.addListener(function( query : Message, _, ?sendResponse ) {
-			switch (query.kind) {
-			case Respone:
-				doResponse(query.value);
-			case Request:
-				var ens = lastWords == query.value ? null : query.value;
-				if (ens == null) {
-					sendResponse(null);              // disconnect the callback from ContentScript
-				} else {
-					lazySendResponse = sendResponse; // do response later
-				}
-				translate(ens);
-				return lazySendResponse != null; // return true to make lazySendResponse available
-			case Control:
-				var args = query.value.split(":");
-				switch (args[0]) {
-				case KDISBLED:
-					var disabled = args[1] != "true";
-					LOG('enablejs :$enablejs, disabled : $disabled');
-					enablejs = disabled;
-				case KVOICES if (bingId != -1):
-					LOG('voices : ${args[1]}');
-					chrome.Scripting.executeScript({
-						target : {tabId : bingId},
-						args : [args[1]],
-						func : function(s) {
-							HookBingTranslator.level = ESXTools.toInt(s);
-						}
-					}).catchError(nop);
-				default:
-				}
-			}
-			return false;
-		});
+	chrome.Storage.local.get(KDISBLED, function( res : StoreDisabled ) {
+		enable = !res.disabled;
+	});
 
-		chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {
-			var scheme = t.url.substring(0, 4);
-			if (!(scheme == "http" || scheme == "file"))
-				return;
-			var ishook = t.url.indexOf(baseUrl, 7) > 0; // "http://".length
-			if (!ishook && enablejs) {
+	chrome.Runtime.onMessage.addListener(function( query : Message, _, ?reply : Dynamic->Void ) {
+		switch (query.kind) {
+		case Respone:
+			response(query.value);
+		case Request:
+			var ens = lstword == query.value ? null : query.value;
+			if (ens == null) {
+				reply(null); // disconnect the callback from ContentScript
+			} else {
+				lazyrep = reply;
+			}
+			translate(ens);
+			return lazyrep != null; // return true to make lazyrep available
+		case Control:
+			var args = query.value.split(":");
+			switch (args[0]) {
+			case KDISBLED:
+				var disabled = args[1] != "true";
+				LOG('enable :$enable, disabled : $disabled');
+				enable = disabled;
+			case KVOICES if (tabid != -1):
+				LOG('voices : ${args[1]}');
 				chrome.Scripting.executeScript({
-					target : {tabId : t.tabId},
-					files : ["js/content-script.js"],
-				}).catchError(nop);
-				return;
-			}
-			// inject hook-bing.js even if enablejs == false
-			if (!ishook)
-				return;
-
-			if (bingId == -1)
-				bingId = t.tabId;
-
-			chrome.Scripting.executeScript({
-				target : {tabId : t.tabId},
-				files : ["js/hook-bingtranslator.js"],
-			}).catchError(nop);
-
-			chrome.Scripting.executeScript({
-				world : MAIN,
-				target : {tabId : t.tabId},
-				func : function() {
-					var tin : js.html.TextAreaElement = js.Syntax.code("tta_input_ta");
-					if (cast tin.onchange)
-						return;
-					tin.onchange = function( e : Event ) {
-						js.Syntax.code("!{0} && sj_evt.fire(RichTranslateHelper.inputTextchanged)", e.isTrusted);
+					target : {tabId : tabid},
+					args : [args[1]],
+					func : function(s) {
+						HookBingTranslator.level = ESXTools.toInt(s);
 					}
-				}
+				}).catchError(nop);
+			default:
+			}
+		}
+		return false;
+	});
+
+	chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {
+		var scheme = t.url.substring(0, 4);
+		if (!(scheme == "http" || scheme == "file"))
+			return;
+		var ishook = t.url.indexOf(BASE_URL, 7) > 0; // "http://".length
+		if (!ishook && enable) {
+			chrome.Scripting.executeScript({
+				target : {tabId : t.tabId},
+				files : ["js/content-script.js"],
 			}).catchError(nop);
-		});
+			return;
+		}
+		// inject hook-bing.js even if enable == false
+		if (!ishook)
+			return;
 
-		chrome.Tabs.onRemoved.addListener(function(tid, _) {
-			if (tid == bingId)
-				bingId = -1;
-		});
+		if (tabid == -1)
+			FLUSH(t.tabId);
 
-		chrome.Storage.local.get(KDISBLED, function(attr : StoreDisabled){
-			enablejs = !attr.disabled;
-		});
-	}
+		chrome.Scripting.executeScript({
+			target : {tabId : t.tabId},
+			files : ["js/hook-bingtranslator.js"],
+		}).catchError(nop);
+
+		chrome.Scripting.executeScript({
+			world : MAIN,
+			target : {tabId : t.tabId},
+			func : function() {
+				var tin : js.html.TextAreaElement = js.Syntax.code("tta_input_ta");
+				if (cast tin.onchange)
+					return;
+				tin.onchange = function( e : Event ) {
+					js.Syntax.code("!{0} && sj_evt.fire(RichTranslateHelper.inputTextchanged)", e.isTrusted);
+				}
+			}
+		}).catchError(nop);
+	});
+
+	chrome.Tabs.onRemoved.addListener(function(id, _) {
+		if (id == tabid)
+			FLUSH(-1);
+	});
 }
