@@ -22,7 +22,7 @@ class hookbt {
 			hookbt.pass = hookbt.detects(ens);
 			let input = tta_input_ta;
 			input.value = ens;
-			input.dispatchEvent(hookbt.echange);
+			input.dispatchEvent(hookbt.paste);
 			if(hookbt.tid > 0) {
 				window.clearTimeout(hookbt.tid);
 			}
@@ -66,7 +66,7 @@ class hookbt {
 }
 {
 }
-hookbt.echange = new Event("change");
+hookbt.paste = new InputEvent("input",{ bubbles : true});
 hookbt.tid = -1;
 hookbt.level = 2;
 hookbt.main();

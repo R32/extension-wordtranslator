@@ -54,9 +54,12 @@ inline function LANG() return chrome.I18n.getUILanguage();
 		}
 		Tabs.query({ url : '${ SCHEME }*.${ BASE_URL }*'}, function(list) {
 			var tab = list[0];
-			if (tab == null) {
+			if (tab == null || tab.status == UNLOADED) {
 				response(null); // disconnect
-				Tabs.create({url : bturl, pinned : true});
+				if (tab == null)
+					Tabs.create({url : bturl, pinned : true});
+				else
+					Tabs.update(tab.id, {active : true});
 				return;
 			}
 			FLUSH(tab.id);
@@ -108,36 +111,18 @@ inline function LANG() return chrome.I18n.getUILanguage();
 		if (!(scheme == "http" || scheme == "file"))
 			return;
 		var ishook = t.url.indexOf(BASE_URL, 7) > 0; // "http://".length
-		if (!ishook && enable) {
-			chrome.Scripting.executeScript({
-				target : {tabId : t.tabId},
-				files : ["js/content-script.js"],
-			}).catchError(nop);
-			return;
-		}
-		// inject hook-bing.js even if enable == false
-		if (!ishook)
+
+		if (!(enable || ishook)) // inject hook-bing.js even if enable == false
 			return;
 
-		if (tabid == -1)
+		if (ishook && tabid == -1)
 			FLUSH(t.tabId);
 
-		chrome.Scripting.executeScript({
-			target : {tabId : t.tabId},
-			files : ["js/hook-bingtranslator.js"],
-		}).catchError(nop);
+		var script = ishook ? "js/hook-bingtranslator.js" : "js/content-script.js";
 
 		chrome.Scripting.executeScript({
-			world : MAIN,
 			target : {tabId : t.tabId},
-			func : function() {
-				var tin : js.html.TextAreaElement = js.Syntax.code("tta_input_ta");
-				if (cast tin.onchange)
-					return;
-				tin.onchange = function( e : Event ) {
-					js.Syntax.code("!{0} && sj_evt.fire(RichTranslateHelper.inputTextchanged)", e.isTrusted);
-				}
-			}
+			files : [script],
 		}).catchError(nop);
 	});
 

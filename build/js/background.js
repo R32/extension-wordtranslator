@@ -28,9 +28,13 @@ function main() {
 		}
 		chrome.tabs.query({ url : "https://" + "*." + "bing.com/translator" + "*"},function(list) {
 			let tab = list[0];
-			if(tab == null) {
+			if(tab == null || tab.status == "unloaded") {
 				response(null);
-				chrome.tabs.create({ url : bturl, pinned : true});
+				if(tab == null) {
+					chrome.tabs.create({ url : bturl, pinned : true});
+				} else {
+					chrome.tabs.update(tab.id,{ active : true});
+				}
 				return;
 			}
 			tabid = tab.id;
@@ -79,26 +83,13 @@ function main() {
 			return;
 		}
 		let ishook = t.url.indexOf("bing.com/translator",7) > 0;
-		if(!ishook && enable) {
-			chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : ["js/content-script.js"]}).catch(nop);
+		if(!(enable || ishook)) {
 			return;
 		}
-		if(!ishook) {
-			return;
-		}
-		if(tabid == -1) {
+		if(ishook && tabid == -1) {
 			tabid = t.tabId;
 		}
-		chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : ["js/hook-bingtranslator.js"]}).catch(nop);
-		chrome.scripting.executeScript({ world : "MAIN", target : { tabId : t.tabId}, func : function() {
-			let tin = tta_input_ta;
-			if(tin.onchange) {
-				return;
-			}
-			tin.onchange = function(e) {
-				!e.isTrusted && sj_evt.fire(RichTranslateHelper.inputTextchanged);
-			};
-		}}).catch(nop);
+		chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : [ishook ? "js/hook-bingtranslator.js" : "js/content-script.js"]}).catch(nop);
 	});
 	chrome.tabs.onRemoved.addListener(function(id,_) {
 		if(id == tabid) {
