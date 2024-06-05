@@ -22,6 +22,16 @@ class Macros {
 			return macro @:pos(args[0].pos) console.log($a{ args });
 		return macro {};
 	}
+
+	macro public static function noCRLF(css) {
+		switch (css.expr) {
+		case EConst(CString(s)):
+			var s = ~/\r|\n|\t+|/g.replace(s, "");
+			return macro @:pos(css.pos) $v{s};
+		default:
+			return css;
+		}
+	}
 #if macro
 
 #end

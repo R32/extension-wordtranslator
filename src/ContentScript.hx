@@ -21,7 +21,7 @@ class ContentScript {
 		if (button.style == null) // for XML file
 			return;
 
-		button.style.cssText = "
+		button.style.cssText = Macros.noCRLF("
 			position : absolute;
 			padding : 2px 4px;
 			margin : 0;
@@ -33,40 +33,46 @@ class ContentScript {
 			cursor : pointer;
 			color : inherit;
 			z-index : 101;
-		";
-		inline function onitself( sel : js.html.Selection ) return sel.anchorNode.parentNode == button;
+		");
+
+		var headwidth = Std.int(devicePixelRatio * 16); // (border-left-width : 12pt) then (12/72 * 96px) == 16px
+
+		inline function hithead( e : MouseEvent ) return e.layerX < headwidth;
+
+		inline function hitself( sel : js.html.Selection ) return sel.anchorNode.parentNode == button;
+
 		var onmove = function( e : MouseEvent ) {
 			e.stopPropagation();
 			button.style.left = movpos.x + e.screenX + "px";
 			button.style.top  = movpos.y + e.screenY + "px";
 		}
-		var updating = function( s : String ) {
+		var flush = function( s : String ) {
 			if (s != null)
 				text(button) = s;
 		}
 		button.onclick = function( e : PointerEvent ) {
 			e.stopPropagation();
-			if (headerhit(e))
+			if (hithead(e))
 				return;
 			if (range != null) {
 				var sel = document.getSelection();
-				if (!sel.isCollapsed && onitself(sel))
+				if (!sel.isCollapsed && hitself(sel))
 					return;
 				sel.removeAllRanges();
 				sel.addRange(range);
 			}
-			chrome.Runtime.sendMessage(query, updating);
+			chrome.Runtime.sendMessage(query, flush);
 		}
 		button.oncontextmenu = function( e : MouseEvent ) {
 			var sel = document.getSelection();
-			if (!sel.isCollapsed && onitself(sel)) // if you want to copy the result
+			if (!sel.isCollapsed && hitself(sel)) // if you want to copy the result
 				return;
 			halt(e);
 			display(button) = CSS_NONE;
 		}
 		var moving = false;
 		button.onmousedown = function( e : MouseEvent ) {
-			if (!headerhit(e))
+			if (!hithead(e))
 				return;
 			// prevents text selection
 			halt(e);
@@ -86,7 +92,7 @@ class ContentScript {
 				return;
 			}
 			var sel = document.getSelection();
-			if (sel.isCollapsed || onitself(sel))
+			if (sel.isCollapsed || hitself(sel))
 				return;
 			var value = sel.toString().trimStart();
 			if (value == "" || query.value == value)
@@ -100,8 +106,6 @@ class ContentScript {
 		};
 		document.body.appendChild(button);
 	}
-	// border-left-width is 12pt then (12/72 * 96px) == 16px
-	static inline function headerhit( e : MouseEvent ) return e.layerX < (devicePixelRatio * 16);
 
 	static function halt( e : Event ) {
 		e.preventDefault();

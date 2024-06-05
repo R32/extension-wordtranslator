@@ -1,6 +1,6 @@
 {
 	"name": "__MSG_APP_NAME__",
-	"version": "1.1",
+	"version": "1.1.1",
 	"manifest_version": 3,
 	"default_locale": "zh_CN",
 	"description": "__MSG_DESCRIPTION__",
@@ -26,10 +26,9 @@
 		"storage",
 		"scripting",
 		"webNavigation",
-		"declarativeNetRequest" // uses declarativeNetRequest to instead of webRequestBlocking.
+		"declarativeNetRequest"
 	],
 
-	// docs : https://sunnyzhou-1024.github.io/chrome-extension-docs/extensions/declarativeNetRequest.html#type-RuleCondition
 	"declarative_net_request": {
 		"rule_resources": [{
 			"id": "redirect-googleapi",

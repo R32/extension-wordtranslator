@@ -28,10 +28,11 @@ bg: $(BG)
 hook: $(HOOK)
 popup: $(POPUPJS) $(POPUPCSS)
 content: $(CONTENT)
+hss: $(POPUPCSS)
 clean:
 	rm -rf $(BG) $(HOOK) $(CONTENT) $(POPUPJS) $(POPUPCSS)
 
-.PHONY: all bg hook popup content clean
+.PHONY: all bg hook popup content hss clean
 
 $(BG): $(SRC)/Background.hx $(COMMON)
 	haxe $(HAXEFLAGS) -D js-global=globalThis --js $@ --main Background --macro exclude\(\'HookBingTranslator\'\)
@@ -45,5 +46,5 @@ $(CONTENT): $(SRC)/ContentScript.hx $(COMMON)
 $(POPUPJS): $(SRC)/Popup.hx $(COMMON)
 	haxe $(HAXEFLAGS) --js $@ --main Popup
 
-$(POPUPCSS): $(POPUPCSS:%.css=%.hss)
-	hss $<
+$(POPUPCSS): hss/popup.hss
+	hss $(dir $@) $<

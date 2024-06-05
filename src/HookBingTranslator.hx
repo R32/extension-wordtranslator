@@ -48,7 +48,7 @@ class HookBingTranslator {
 			input.dispatchEvent(echange);
 			if (tid > 0)
 				window.clearTimeout(tid);
-			tid = window.setTimeout(rolling, 300, 20); // 6 seconds
+			tid = window.setTimeout(rolling, 333, 20); // 6 seconds
 		}
 		LOG("disable : " + (level > 0xFF) + ", level : " + (level & 0xFF) + ", pass : " + pass);
 		if (level < 0xFF && pass)
