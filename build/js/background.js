@@ -22,11 +22,11 @@ function main() {
 			chrome.scripting.executeScript({ target : { tabId : tabid}, args : [ens], func : function(s) {
 				hookbt.run(s);
 			}}).catch(function(_) {
-				response(chrome.i18n.getUILanguage() == "zh-CN" ? "出错了" : "something is wrong");
+				response(chrome.i18n.getUILanguage() == "zh-CN" ? "出错了" : "Something is wrong");
 			});
 			return;
 		}
-		chrome.tabs.query({ url : "https://*." + "bing.com/translator" + "*"},function(list) {
+		chrome.tabs.query({ url : "https://" + "*." + "bing.com/translator" + "*"},function(list) {
 			let tab = list[0];
 			if(tab == null) {
 				response(null);

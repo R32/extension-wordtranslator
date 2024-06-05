@@ -4,6 +4,8 @@ import chrome.Tabs;
 
 inline var BASE_URL = "bing.com/translator";
 
+inline var SCHEME = "https://";
+
 inline function LANG() return chrome.I18n.getUILanguage();
 
 /*
@@ -16,7 +18,7 @@ inline function LANG() return chrome.I18n.getUILanguage();
 
 	var nop = function(_){};
 
-	var bturl = LANG() == "zh-CN" ? ("https://" + "cn." + BASE_URL) : "https://" + BASE_URL;
+	var bturl = LANG() == "zh-CN" ? '${ SCHEME }cn.${ BASE_URL }' : '${ SCHEME }${ BASE_URL }';
 
 	var enable = true; // Storage.local
 
@@ -46,11 +48,11 @@ inline function LANG() return chrome.I18n.getUILanguage();
 					HookBingTranslator.run(s);
 				}
 			}).catchError(function(_) {
-				response(LANG() == "zh-CN" ? "出错了" : "something is wrong");
+				response(LANG() == "zh-CN" ? "出错了" : "Something is wrong");
 			});
 			return;
 		}
-		Tabs.query({ url : "https://*." +  BASE_URL + "*" }, function(list) {
+		Tabs.query({ url : '${ SCHEME }*.${ BASE_URL }*'}, function(list) {
 			var tab = list[0];
 			if (tab == null) {
 				response(null); // disconnect
