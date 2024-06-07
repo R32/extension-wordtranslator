@@ -5,7 +5,7 @@ class hookbt {
 		hookbt.tid = -1;
 		let cur = tta_output_ta.value;
 		if(lvl < 0) {
-			cur = chrome.i18n.getUILanguage() == "zh-CN" ? "查词失败" : "query failed";
+			cur = null;
 		} else {
 			let i = 0;
 			let len = cur.length;

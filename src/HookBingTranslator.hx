@@ -20,7 +20,7 @@ class HookBingTranslator {
 		tid = -1;
 		var cur = fromId(TOUT).value;
 		if (lvl < 0) {
-			cur = chrome.I18n.getUILanguage() == "zh-CN" ? "查词失败" : "query failed";
+			cur = null;
 		} else {
 			var i = 0;
 			var len = cur.length;

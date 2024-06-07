@@ -1,0 +1,14 @@
+{
+	"APP_NAME": {
+		"message": "羊毛查词"
+	},
+	"DESCRIPTION": {
+		"message": "极度轻量化的划词翻译插件, 其目标是取代国内不再可用的 “Google 翻译插件”."
+	},
+	"WRONG": {
+		"message": "出错了"
+	},
+	"FAILED": {
+		"message": "查询失败"
+	}
+}

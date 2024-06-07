@@ -8,6 +8,8 @@ inline var SCHEME = "https://";
 
 inline function LANG() return chrome.I18n.getUILanguage();
 
+inline function is_undefined( v : Dynamic ) return js.Syntax.strictEq(v, js.Lib.undefined);
+
 /*
  * TODO : For non-persistent backends, the doc says : "do not rely on global variables",
  * But that seems impossible to do it, because you can't store functions to "Storage.session".
@@ -16,27 +18,32 @@ inline function LANG() return chrome.I18n.getUILanguage();
 {
 	var tabid = -1;
 
-	var nop = function(_){};
+	var NOP = function(_){};
 
-	var bturl = LANG() == "zh-CN" ? '${ SCHEME }cn.${ BASE_URL }' : '${ SCHEME }${ BASE_URL }';
+	var BTURL = LANG() == "zh-CN" ? '${ SCHEME }cn.${ BASE_URL }' : '${ SCHEME }${ BASE_URL }';
 
 	var enable = true; // Storage.local
 
-	var lazyrep : Dynamic->Void = null;
+	var lazy_reply : Dynamic->Void = null;
 
-	var lstword : String = null;
+	var tmp_ens : String = null;
+	var lst_ens : String;
 
 	inline function FLUSH(id) {
-		tabid = id; // local
+		tabid = id;
 		//// chrome.Storage.session.set({tabid : id}); // session store
 	}
 
-	function response( zhs : String ) {
-		if (lazyrep == null)
+	function response( zhs : String, ?reason : LocaleMessage ) {
+		if (lazy_reply == null)
 			return;
-		lazyrep(zhs);
-		lazyrep = null;
-		lstword = zhs;
+		if (zhs == null) {
+			tmp_ens = null; // clear up
+			zhs = LocaleMessage.get(is_undefined(reason) ? Fails : reason);
+		}
+		lazy_reply(zhs);
+		lazy_reply = null;
+		lst_ens = tmp_ens;
 	}
 
 	function translate( ens : String ) {
@@ -48,16 +55,16 @@ inline function LANG() return chrome.I18n.getUILanguage();
 					HookBingTranslator.run(s);
 				}
 			}).catchError(function(_) {
-				response(LANG() == "zh-CN" ? "出错了" : "Something is wrong");
+				response(null, Wrong);
 			});
 			return;
 		}
 		Tabs.query({ url : '${ SCHEME }*.${ BASE_URL }*'}, function(list) {
 			var tab = list[0];
 			if (tab == null || tab.status == UNLOADED) {
-				response(null); // disconnect
+				response(null, Disconnect);
 				if (tab == null)
-					Tabs.create({url : bturl, pinned : true});
+					Tabs.create({url : BTURL, pinned : true});
 				else
 					Tabs.update(tab.id, {active : true});
 				return;
@@ -76,14 +83,18 @@ inline function LANG() return chrome.I18n.getUILanguage();
 		case Respone:
 			response(query.value);
 		case Request:
-			var ens = lstword == query.value ? null : query.value;
+			var ens = lst_ens == query.value ? null : query.value;
 			if (ens == null) {
-				reply(null); // disconnect the callback from ContentScript
+				reply(null);     // disconnect the callback from ContentScript
+				translate(null); // sound only
 			} else {
-				lazyrep = reply;
+				if (lazy_reply != null)
+					lazy_reply(null);
+				lazy_reply = reply;
+				tmp_ens = ens;
+				translate(ens);
+				return true;     // keep the connection alive
 			}
-			translate(ens);
-			return lazyrep != null; // return true to make lazyrep available
 		case Control:
 			var args = query.value.split(":");
 			switch (args[0]) {
@@ -99,7 +110,7 @@ inline function LANG() return chrome.I18n.getUILanguage();
 					func : function(s) {
 						HookBingTranslator.level = ESXTools.toInt(s);
 					}
-				}).catchError(nop);
+				}).catchError(NOP);
 			default:
 			}
 		}
@@ -123,11 +134,20 @@ inline function LANG() return chrome.I18n.getUILanguage();
 		chrome.Scripting.executeScript({
 			target : {tabId : t.tabId},
 			files : [script],
-		}).catchError(nop);
+		}).catchError(NOP);
 	});
 
 	chrome.Tabs.onRemoved.addListener(function(id, _) {
 		if (id == tabid)
 			FLUSH(-1);
 	});
+}
+
+extern enum abstract LocaleMessage(String) to String {
+	var Fails = "FAILED";
+	var Wrong = "WRONG";
+	var Disconnect = null;
+	static inline function get( m : LocaleMessage ) : String {
+		return m != null ? chrome.I18n.getMessage(m) : m;
+	}
 }

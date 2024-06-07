@@ -3,6 +3,12 @@
 		"message": "yangmao words"
 	},
 	"DESCRIPTION": {
-		"message": "sends text to bing translator"
+		"message": "Extremely lightweight word translation extension."
+	},
+	"WRONG": {
+		"message": "Something wrong"
+	},
+	"FAILED": {
+		"message": "Failed queries"
 	}
 }

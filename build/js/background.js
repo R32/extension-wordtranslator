@@ -2,19 +2,25 @@
 (function ($global) { "use strict";
 function main() {
 	let tabid = -1;
-	let nop = function(_) {
+	let NOP = function(_) {
 	};
-	let bturl = chrome.i18n.getUILanguage() == "zh-CN" ? "https://" + "cn." + "bing.com/translator" : "https://" + "bing.com/translator";
+	let BTURL = chrome.i18n.getUILanguage() == "zh-CN" ? "https://" + "cn." + "bing.com/translator" : "https://" + "bing.com/translator";
 	let enable = true;
-	let lazyrep = null;
-	let lstword = null;
-	let response = function(zhs) {
-		if(lazyrep == null) {
+	let lazy_reply = null;
+	let tmp_ens = null;
+	let lst_ens;
+	let response = function(zhs,reason) {
+		if(lazy_reply == null) {
 			return;
 		}
-		lazyrep(zhs);
-		lazyrep = null;
-		lstword = zhs;
+		if(zhs == null) {
+			tmp_ens = null;
+			let m = ((reason) === undefined) ? "FAILED" : reason;
+			zhs = m != null ? chrome.i18n.getMessage(m) : m;
+		}
+		lazy_reply(zhs);
+		lazy_reply = null;
+		lst_ens = tmp_ens;
 	};
 	let translate = null;
 	translate = function(ens) {
@@ -22,16 +28,16 @@ function main() {
 			chrome.scripting.executeScript({ target : { tabId : tabid}, args : [ens], func : function(s) {
 				hookbt.run(s);
 			}}).catch(function(_) {
-				response(chrome.i18n.getUILanguage() == "zh-CN" ? "出错了" : "Something is wrong");
+				response(null,"WRONG");
 			});
 			return;
 		}
 		chrome.tabs.query({ url : "https://" + "*." + "bing.com/translator" + "*"},function(list) {
 			let tab = list[0];
 			if(tab == null || tab.status == "unloaded") {
-				response(null);
+				response(null,null);
 				if(tab == null) {
-					chrome.tabs.create({ url : bturl, pinned : true});
+					chrome.tabs.create({ url : BTURL, pinned : true});
 				} else {
 					chrome.tabs.update(tab.id,{ active : true});
 				}
@@ -47,14 +53,20 @@ function main() {
 	chrome.runtime.onMessage.addListener(function(query,_,reply) {
 		switch(query[0]) {
 		case 0:
-			let ens = lstword == query[1] ? null : query[1];
+			let ens = lst_ens == query[1] ? null : query[1];
 			if(ens == null) {
 				reply(null);
+				translate(null);
 			} else {
-				lazyrep = reply;
+				if(lazy_reply != null) {
+					lazy_reply(null);
+				}
+				lazy_reply = reply;
+				tmp_ens = ens;
+				translate(ens);
+				return true;
 			}
-			translate(ens);
-			return lazyrep != null;
+			break;
 		case 1:
 			response(query[1]);
 			break;
@@ -68,7 +80,7 @@ function main() {
 				if(tabid != -1) {
 					chrome.scripting.executeScript({ target : { tabId : tabid}, args : [args[1]], func : function(s) {
 						hookbt.level = (s | 0);
-					}}).catch(nop);
+					}}).catch(NOP);
 				}
 				break;
 			default:
@@ -89,7 +101,7 @@ function main() {
 		if(ishook && tabid == -1) {
 			tabid = t.tabId;
 		}
-		chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : [ishook ? "js/hook-bingtranslator.js" : "js/content-script.js"]}).catch(nop);
+		chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : [ishook ? "js/hook-bingtranslator.js" : "js/content-script.js"]}).catch(NOP);
 	});
 	chrome.tabs.onRemoved.addListener(function(id,_) {
 		if(id == tabid) {
