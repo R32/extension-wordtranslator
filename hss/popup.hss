@@ -14,9 +14,9 @@ body {
 
 	font-size : $font-size;
 	font-family : Arial, SimSun;
-	background : var(--color-background);
+	background-color : var(--color-background);
 	padding : 0;
-	margin : 3pt;
+	margin : $padding-size * 0.5;
 	text-align : center;
 	> a {
 		font-size : $font-size * .75;
@@ -78,7 +78,7 @@ body {
 	}
 }
 
-@media screen and (prefers-color-scheme : dark) {
+@media (prefers-color-scheme : dark) {
 	$color-enable     : #51e3b2;
 	$color-background : #343D46;
 	body {

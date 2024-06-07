@@ -105,11 +105,7 @@ class HookBingTranslator {
  * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Sharing_objects_with_page_scripts
  */
 #if firefox
-@:native("wrappedJSObject") extern var wrappedJSObject : {
-	tta_input_ta : TextAreaElement,
-	tta_output_ta : TextAreaElement,
-	tta_playiconsrc : DOMElement,
-}
+@:native("wrappedJSObject") extern var wrappedJSObject : Dynamic;
 @:native("tta_input_ta") @:keep var tta_input_ta = wrappedJSObject.tta_input_ta;
 @:native("tta_output_ta") @:keep var tta_output_ta = wrappedJSObject.tta_output_ta;
 @:native("tta_playiconsrc") @:keep var tta_playiconsrc = wrappedJSObject.tta_playiconsrc;

@@ -29,6 +29,7 @@ hook: $(HOOK)
 popup: $(POPUPJS) $(POPUPCSS)
 content: $(CONTENT)
 hss: $(POPUPCSS)
+
 clean:
 	rm -rf $(BG) $(HOOK) $(CONTENT) $(POPUPJS) $(POPUPCSS)
 
@@ -47,4 +48,4 @@ $(POPUPJS): $(SRC)/Popup.hx $(COMMON)
 	haxe $(HAXEFLAGS) --js $@ --main Popup
 
 $(POPUPCSS): hss/popup.hss
-	hss $(dir $@) $<
+	hss -output $(dir $@) $<

@@ -6,7 +6,7 @@ body {
 	--color-gray-lighten : #D9EDE6;
 	font-size : 12pt;
 	font-family : Arial, SimSun;
-	background : var(--color-background);
+	background-color : var(--color-background);
 	padding : 0;
 	margin : 3pt;
 	text-align : center;
@@ -67,7 +67,7 @@ body > a:hover {
 #menumain > label > a:hover, #menumain > label > a:focus {
 	color : var(--color-enable);
 }
-@media screen and (prefers-color-scheme : dark) {
+@media (prefers-color-scheme : dark) {
 	body {
 		--color-enable : #51e3b2;
 		--color-background : #343D46;
