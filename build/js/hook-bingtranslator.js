@@ -30,7 +30,8 @@ function polling(lvl) {
 }
 var sound = null;
 function run(ens) {
-	if(lst_ens != ens) {
+	let diff = lst_ens != ens;
+	if(diff) {
 		tmp_ens = ens;
 		sound = detects(ens);
 		let input = tta_input_ta;
@@ -44,6 +45,7 @@ function run(ens) {
 	if(sound && level < 255) {
 		tta_playiconsrc.click();
 	}
+	return diff;
 }
 function detects(ens) {
 	let n = level & 255;
@@ -82,8 +84,7 @@ function main() {
 				lazy_reply(null);
 			}
 			lazy_reply = reply;
-			run(msg[1]);
-			return true;
+			return run(msg[1]);
 		case 2:
 			let args = msg[1].split(":");
 			if(args[0] == "voices") {

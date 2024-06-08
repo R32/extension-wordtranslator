@@ -68,8 +68,9 @@ var paste = new js.html.InputEvent("input", {bubbles : true});
 
 var sound : Bool;
 
-function run( ens : String ) {
-	if (ens_diff(ens)) {
+function run( ens : String ) : Bool {
+	var diff = ens_diff(ens);
+	if (diff) {
 		ens_add(ens);
 		sound = detects(ens);
 		var input = from_id(TIN);
@@ -82,6 +83,7 @@ function run( ens : String ) {
 	LOG("disable : " + (level > 0xFF) + ", level : " + (level & 0xFF) + ", sound : " + sound + ", diff : " + ens_diff(ens));
 	if (sound && level < 0xFF)
 		play();
+	return diff;
 }
 
 function detects( ens : String ) {
@@ -126,8 +128,7 @@ function main() {
 			if (lazy_reply != null)
 				lazy_reply(null);
 			lazy_reply = reply;
-			run(msg.value);
-			return true;
+			return run(msg.value);
 		case Control:
 			var args = msg.value.split(":");
 			if (args[0] == KVOICES)
