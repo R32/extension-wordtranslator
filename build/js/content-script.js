@@ -9,7 +9,7 @@ class ContentScript {
 		let movpos_x = 0;
 		movpos_y = 0;
 		let range = null;
-		let query = [0,""];
+		let query = [1,""];
 		let button = document.getElementById("yangmaowords");
 		if(button != null) {
 			return;

@@ -8,7 +8,7 @@
 	"WRONG": {
 		"message": "Something wrong"
 	},
-	"FAILED": {
-		"message": "Failed queries"
+	"TIMEOUT": {
+		"message": "Time out"
 	}
 }

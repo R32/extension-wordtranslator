@@ -7,35 +7,25 @@ function main() {
 	let BTURL = chrome.i18n.getUILanguage() == "zh-CN" ? "https://" + "cn." + "bing.com/translator" : "https://" + "bing.com/translator";
 	let enable = true;
 	let lazy_reply = null;
-	let tmp_ens = null;
-	let lst_ens;
-	let response = function(zhs,reason) {
+	let flush = function(v) {
 		if(lazy_reply == null) {
 			return;
 		}
-		if(zhs == null) {
-			tmp_ens = null;
-			let m = ((reason) === undefined) ? "FAILED" : reason;
-			zhs = m != null ? chrome.i18n.getMessage(m) : m;
-		}
-		lazy_reply(zhs);
+		lazy_reply(v);
 		lazy_reply = null;
-		lst_ens = tmp_ens;
 	};
-	let translate = null;
-	translate = function(ens) {
+	let run = null;
+	run = function(msg) {
 		if(tabid != -1) {
-			chrome.scripting.executeScript({ target : { tabId : tabid}, args : [ens], func : function(s) {
-				hookbt.run(s);
-			}}).catch(function(_) {
-				response(null,"WRONG");
+			chrome.tabs.sendMessage(tabid,msg).then(flush).catch(function(_) {
+				flush(chrome.i18n.getMessage("WRONG"));
 			});
 			return;
 		}
-		chrome.tabs.query({ url : "https://" + "*." + "bing.com/translator" + "*"},function(list) {
-			let tab = list[0];
+		chrome.tabs.query({ url : "https://" + "*." + "bing.com/translator" + "*"},function(tabs) {
+			let tab = tabs[0];
 			if(tab == null || tab.status == "unloaded") {
-				response(null,null);
+				flush(null);
 				if(tab == null) {
 					chrome.tabs.create({ url : BTURL, pinned : true});
 				} else {
@@ -44,43 +34,30 @@ function main() {
 				return;
 			}
 			tabid = tab.id;
-			translate(ens);
+			run(msg);
 		});
 	};
 	chrome.storage.local.get("disabled",function(res) {
-		enable = !res.disabled;
+		enable = !res["disabled"];
 	});
-	chrome.runtime.onMessage.addListener(function(query,_,reply) {
-		switch(query[0]) {
-		case 0:
-			let ens = lst_ens == query[1] ? null : query[1];
-			if(ens == null) {
-				reply(null);
-				translate(null);
-			} else {
-				if(lazy_reply != null) {
-					lazy_reply(null);
-				}
-				lazy_reply = reply;
-				tmp_ens = ens;
-				translate(ens);
-				return true;
-			}
-			break;
+	chrome.runtime.onMessage.addListener(function(msg,_,reply) {
+		switch(msg[0]) {
 		case 1:
-			response(query[1]);
-			break;
+			if(lazy_reply != null) {
+				lazy_reply(null);
+			}
+			lazy_reply = reply;
+			run(msg);
+			return true;
 		case 2:
-			let args = query[1].split(":");
+			let args = msg[1].split(":");
 			switch(args[0]) {
 			case "disabled":
 				enable = args[1] != "true";
 				break;
 			case "voices":
 				if(tabid != -1) {
-					chrome.scripting.executeScript({ target : { tabId : tabid}, args : [args[1]], func : function(s) {
-						hookbt.level = (s | 0);
-					}}).catch(NOP);
+					chrome.tabs.sendMessage(tabid,msg).catch(NOP);
 				}
 				break;
 			default:

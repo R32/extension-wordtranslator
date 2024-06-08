@@ -43,27 +43,24 @@ class Popup {
 			var disabled = !checked;
 			setUiDisabled(ui_sound, disabled);
 			setUiDisabled(ui_redirect, disabled);
-			var value : StoreDisabled = {disabled : disabled};
-			Storage.local.set(value, function() {
-				sendMessage(new Message(Control, KDISBLED + ":" + disabled));
+			Storage.local.set(KDISBLED.join(disabled), function() {
+				chrome.Runtime.sendMessage(new Message(Control, KDISBLED + ":" + disabled));
 			});
 			// update googleapi redirecting
 			if (disabled) {
 				flushRedirect(false);
 			} else {
-				Storage.local.get([KREDIRECT], function( stored : StoreRedirect ) {
-					flushRedirect(stored.redirect);
+				Storage.local.get([KREDIRECT], function( res : StoreObj ) {
+					flushRedirect(res[KREDIRECT]);
 				});
 			}
 		case 1 if (label == ui_redirect):
-			var value : StoreRedirect = {redirect : checked};
-			Storage.local.set(value, function() {
+			Storage.local.set(KREDIRECT.join(checked), function() {
 				flushRedirect(checked);
 			});
 		case 2:
-			var value : StoreVoices = {voices : extra};
-			Storage.local.set(value, function() {
-				sendMessage(new Message(Control, KVOICES + ":" + extra));
+			Storage.local.set(KVOICES.join(extra), function() {
+				chrome.Runtime.sendMessage(new Message(Control, KVOICES + ":" + extra));
 			});
 		default:
 		}
@@ -101,25 +98,25 @@ class Popup {
 			if (target.type == "checkbox") {
 				update(parent, target.checked);
 			} else if (parent == voices) {
-				update(parent, true, target.value);
+				update(voices, true, target.value);
 			}
 		}
 		// init
-		Storage.local.get([KVOICES, KDISBLED, KREDIRECT], function( stores : StoreAll ) {
+		Storage.local.get([KVOICES, KDISBLED, KREDIRECT], function( res : StoreObj ) {
 			var menu = MenuUi.ofSelector(MenuUi.SELECTOR);
 			var ui_voices = menu.sound;
 			var ui_redirect = menu.redirect;
-			if (stores.disabled) {
+			if (res[KDISBLED]) {
 				setUiChecked(menu.enable, false);
 				setUiDisabled(ui_redirect, true);
 				setUiDisabled(ui_voices, true);
 			}
-			if (stores.redirect) {
+			if (res[KREDIRECT]) {
 				setUiChecked(ui_redirect, true);
 				flushRedirect(true);
 			}
-			if (stores.voices != null) {
-				var n = ESXTools.toInt(stores.voices);
+			if (res[KVOICES] != null) {
+				var n = ESXTools.toInt(res[KVOICES]);
 				if (n > 0xFF) {
 					setUiChecked(ui_voices, false);
 				}
@@ -132,9 +129,9 @@ class Popup {
 
 @:build(Nvd.build("build/popup.html", "#menumain", {
 
-	enable : $("label:nth-child(1)"),
+	enable   : $("label:nth-child(1)"),
 	redirect : $("label:nth-child(2)"),
-	sound  : $("label:nth-child(3)"),
+	sound    : $("label:nth-child(3)"),
 
 })) extern abstract MenuUi(nvd.Comp) {
 }

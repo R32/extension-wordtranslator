@@ -9,6 +9,7 @@ HAXEFLAGS := -cp $(SRC)\
 	-D analyzer-optimize\
 	-D no-traces\
 	-lib chrome-extension-v3\
+	-lib macro-tools-ya\
 	-lib no-vdom\
 	--macro exclude\(\'haxe.iterators.ArrayIterator\'\)
 
@@ -36,10 +37,10 @@ clean:
 .PHONY: all bg hook popup content hss clean
 
 $(BG): $(SRC)/Background.hx $(COMMON)
-	haxe $(HAXEFLAGS) -D js-global=globalThis --js $@ --main Background --macro exclude\(\'HookBingTranslator\'\)
+	haxe $(HAXEFLAGS) -D js-global=globalThis --js $@ --main Background
 
 $(HOOK): $(SRC)/HookBingTranslator.hx $(COMMON)
-	haxe $(HAXEFLAGS) --js $@ --main HookBingTranslator -D js-classic
+	haxe $(HAXEFLAGS) --js $@ --main HookBingTranslator -D js-classic --macro tools.ModuleLevel.strip\([\'HookBingTranslator\']\)
 
 $(CONTENT): $(SRC)/ContentScript.hx $(COMMON)
 	haxe $(HAXEFLAGS) --js $@ --main ContentScript

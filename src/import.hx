@@ -3,7 +3,6 @@
 import haxe.Constraints.Function;
 import Nvd.HXX;
 import Data;
-import Data.sendMessage;
 // js
 import js.lib.Error;
 import js.lib.Promise;
@@ -30,8 +29,6 @@ import Global.CSS_BLOCK;
 import Global.CSS_NONE;
 import Global.CSS_EMPTY;
 
-import Global.console;
-import Global.document;
-import Global.window;
-import Global.devicePixelRatio;
+// import all module-level fields
+import Global;
 #end

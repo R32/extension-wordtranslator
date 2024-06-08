@@ -34,27 +34,27 @@ class Popup {
 				let disabled = !checked;
 				Popup.setAttribute(ui_sound,"disabled",disabled);
 				Popup.setAttribute(ui_redirect,"disabled",disabled);
-				chrome.storage.local.set({ disabled : disabled},function() {
+				chrome.storage.local.set({"disabled" : disabled},function() {
 					chrome.runtime.sendMessage([2,"disabled" + ":" + (disabled == null ? "null" : "" + disabled)]);
 				});
 				if(disabled) {
 					Popup.flushRedirect(false);
 				} else {
-					chrome.storage.local.get(["redirect"],function(stored) {
-						Popup.flushRedirect(stored.redirect);
+					chrome.storage.local.get(["redirect"],function(res) {
+						Popup.flushRedirect(res["redirect"]);
 					});
 				}
 			}
 			break;
 		case 1:
 			if(label == ui_redirect) {
-				chrome.storage.local.set({ redirect : checked},function() {
+				chrome.storage.local.set({"redirect" : checked},function() {
 					Popup.flushRedirect(checked);
 				});
 			}
 			break;
 		case 2:
-			chrome.storage.local.set({ voices : extra},function() {
+			chrome.storage.local.set({"voices" : extra},function() {
 				chrome.runtime.sendMessage([2,"voices" + ":" + extra]);
 			});
 			break;
@@ -87,24 +87,24 @@ class Popup {
 			if(target.type == "checkbox") {
 				Popup.update(parent,target.checked);
 			} else if(parent == voices) {
-				Popup.update(parent,true,target.value);
+				Popup.update(voices,true,target.value);
 			}
 		};
-		chrome.storage.local.get(["voices","disabled","redirect"],function(stores) {
+		chrome.storage.local.get(["voices","disabled","redirect"],function(res) {
 			let menu = document.querySelector("#menumain");
 			let ui_voices = menu.children[2];
 			let ui_redirect = menu.children[1];
-			if(stores.disabled) {
+			if(res["disabled"]) {
 				Popup.setAttribute(menu.children[0],"checked",false);
 				Popup.setAttribute(ui_redirect,"disabled",true);
 				Popup.setAttribute(ui_voices,"disabled",true);
 			}
-			if(stores.redirect) {
+			if(res["redirect"]) {
 				Popup.setAttribute(ui_redirect,"checked",true);
 				Popup.flushRedirect(true);
 			}
-			if(stores.voices != null) {
-				let n = (stores.voices | 0);
+			if(res["voices"] != null) {
+				let n = (res["voices"] | 0);
 				if(n > 255) {
 					Popup.setAttribute(ui_voices,"checked",false);
 				}

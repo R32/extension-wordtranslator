@@ -8,24 +8,25 @@
 -D no-traces
 
 -lib chrome-extension-v3
+-lib macro-tools-ya
 -lib no-vdom
 --macro exclude('haxe.iterators.ArrayIterator')
 
 --each
 -D js-global=globalThis
---macro exclude('HookBingTranslator')
 -main Background
--js build/js/background.js
+--js build/js/background.js
 
 --next
 -main ContentScript
--js build/js/content-script.js
+--js build/js/content-script.js
 
 --next
 -D js-classic
 -main HookBingTranslator
--js build/js/hook-bingtranslator.js
+--js build/js/hook-bingtranslator.js
+--macro tools.ModuleLevel.strip(['HookBingTranslator'])
 
 --next
 -main Popup
--js build/js/popup.js
+--js build/js/popup.js

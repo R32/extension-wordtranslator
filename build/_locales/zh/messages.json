@@ -8,7 +8,7 @@
 	"WRONG": {
 		"message": "出错了"
 	},
-	"FAILED": {
-		"message": "查询失败"
+	"TIMEOUT": {
+		"message": "查询超时"
 	}
 }
