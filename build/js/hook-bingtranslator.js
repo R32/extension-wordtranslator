@@ -41,6 +41,8 @@ function run(ens) {
 			window.clearTimeout(tid);
 		}
 		tid = window.setTimeout(polling,500,10);
+	} else {
+		lazy_reply = null;
 	}
 	if(sound && level < 255) {
 		tta_playiconsrc.click();

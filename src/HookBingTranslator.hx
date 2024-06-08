@@ -79,6 +79,8 @@ function run( ens : String ) : Bool {
 		if (tid > 0)
 			window.clearTimeout(tid);
 		tid = window.setTimeout(polling, 500, 10);
+	} else {
+		lazy_reply = null;
 	}
 	LOG("disable : " + (level > 0xFF) + ", level : " + (level & 0xFF) + ", sound : " + sound + ", diff : " + ens_diff(ens));
 	if (sound && level < 0xFF)
