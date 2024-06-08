@@ -46,7 +46,7 @@ $(CONTENT): $(SRC)/ContentScript.hx $(COMMON)
 	haxe $(HAXEFLAGS) --js $@ --main ContentScript
 
 $(POPUPJS): $(SRC)/Popup.hx $(COMMON)
-	haxe $(HAXEFLAGS) --js $@ --main Popup
+	haxe $(HAXEFLAGS) --js $@ --main Popup --macro tools.ModuleLevel.strip\([\'Popup\']\)
 
 $(POPUPCSS): hss/popup.hss
 	hss -output $(dir $@) $<

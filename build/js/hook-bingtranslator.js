@@ -39,7 +39,7 @@ function run(ens) {
 		if(tid > 0) {
 			window.clearTimeout(tid);
 		}
-		tid = window.setTimeout(polling,600,10);
+		tid = window.setTimeout(polling,500,10);
 	}
 	if(sound && level < 255) {
 		tta_playiconsrc.click();

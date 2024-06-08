@@ -30,3 +30,4 @@
 --next
 -main Popup
 --js build/js/popup.js
+--macro tools.ModuleLevel.strip(['Popup'])
