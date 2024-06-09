@@ -9,7 +9,7 @@ HAXEFLAGS := -cp $(SRC)\
 	-D analyzer-optimize\
 	-D no-traces\
 	-lib chrome-extension-v3\
-	-lib macro-tools-ya\
+	-lib macro-aux\
 	-lib no-vdom\
 	--macro exclude\(\'haxe.iterators.ArrayIterator\'\)
 
@@ -40,13 +40,13 @@ $(BG): $(SRC)/Background.hx $(COMMON)
 	haxe $(HAXEFLAGS) -D js-global=globalThis --js $@ --main Background
 
 $(HOOK): $(SRC)/HookBingTranslator.hx $(COMMON)
-	haxe $(HAXEFLAGS) --js $@ --main HookBingTranslator -D js-classic --macro tools.ModuleLevel.strip\([\'HookBingTranslator\']\)
+	haxe $(HAXEFLAGS) --js $@ --main HookBingTranslator -D js-classic --macro maux.ModuleLevel.strip\([\'HookBingTranslator\']\)
 
 $(CONTENT): $(SRC)/ContentScript.hx $(COMMON)
 	haxe $(HAXEFLAGS) --js $@ --main ContentScript
 
 $(POPUPJS): $(SRC)/Popup.hx $(COMMON)
-	haxe $(HAXEFLAGS) --js $@ --main Popup --macro tools.ModuleLevel.strip\([\'Popup\']\)
+	haxe $(HAXEFLAGS) --js $@ --main Popup --macro maux.ModuleLevel.strip\([\'Popup\']\)
 
 $(POPUPCSS): hss/popup.hss
 	hss -output $(dir $@) $<

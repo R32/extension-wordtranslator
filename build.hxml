@@ -8,7 +8,7 @@
 -D no-traces
 
 -lib chrome-extension-v3
--lib macro-tools-ya
+-lib macro-aux
 -lib no-vdom
 --macro exclude('haxe.iterators.ArrayIterator')
 
@@ -25,9 +25,9 @@
 -D js-classic
 -main HookBingTranslator
 --js build/js/hook-bingtranslator.js
---macro tools.ModuleLevel.strip(['HookBingTranslator'])
+--macro maux.ModuleLevel.strip(['HookBingTranslator'])
 
 --next
 -main Popup
 --js build/js/popup.js
---macro tools.ModuleLevel.strip(['Popup'])
+--macro maux.ModuleLevel.strip(['Popup'])
