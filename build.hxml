@@ -23,6 +23,7 @@
 
 --next
 -D js-classic
+-D firefox
 -main HookBingTranslator
 --js build/js/hook-bingtranslator.js
 --macro maux.ModuleLevel.strip(['HookBingTranslator'])

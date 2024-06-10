@@ -40,7 +40,7 @@ $(BG): $(SRC)/Background.hx $(COMMON)
 	haxe $(HAXEFLAGS) -D js-global=globalThis --js $@ --main Background
 
 $(HOOK): $(SRC)/HookBingTranslator.hx $(COMMON)
-	haxe $(HAXEFLAGS) --js $@ --main HookBingTranslator -D js-classic --macro maux.ModuleLevel.strip\([\'HookBingTranslator\']\)
+	haxe $(HAXEFLAGS) --js $@ --main HookBingTranslator -D js-classic --macro maux.ModuleLevel.strip\([\'HookBingTranslator\']\) -D firefox
 
 $(CONTENT): $(SRC)/ContentScript.hx $(COMMON)
 	haxe $(HAXEFLAGS) --js $@ --main ContentScript
