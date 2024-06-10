@@ -99,6 +99,9 @@ function main() {
 }
 {
 }
+var tta_input_ta = wrappedJSObject.tta_input_ta;
+var tta_output_ta = wrappedJSObject.tta_output_ta;
+var tta_playiconsrc = wrappedJSObject.tta_playiconsrc;
 var tid = -1;
 var level = 2;
 var paste = new InputEvent("input",{ bubbles : true});
