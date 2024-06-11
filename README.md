@@ -14,7 +14,17 @@
 
 ### 安装
 
-插件仅适用于 chromium 类型的浏览器, 例如 : `brave`(推荐), `ungoogled chromium`, `微软 edge` 或者 `chrome`
+目前只有 **`firefox`** 和 **`微软 edge`** 的, 对于其它浏览器只能以文件形式手动安装.
+
+- [Firefox 浏览器](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词)
+
+  对于 firefox 浏览器, 在安装后 **可能需要** 手动点开 "存取您在所有网站的数据" 权限, 因为需要注入 [content-script.js](build/js/content-script.js) 才能正常工作
+
+- _微软 edge (正在审批中...)_
+
+#### 以文件形式手动安装
+
+手动安装仅适用于 chromium 类型的浏览器, 例如 : `brave`, `ungoogled chromium`, 或者 `chrome`
 
 > 基于 chromium 的浏览器市面上有很多, 可自己搜素
 
@@ -51,7 +61,7 @@
 
 ### 常见问题
 
-- 选中文本后点击小窗口没反应, 或没有发音, 或者出现 "executeScript error"
+- 选中文本后点击小窗口没反应, 或没有发音, 或者出现 "查询错误"
 
     这是由于浏览器会回收"不活动的页面", 因此切换到"必应翻译"网页, 并在网页上随便点下或刷新
 
