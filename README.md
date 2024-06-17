@@ -14,27 +14,25 @@
 
 ### 安装
 
-目前只有 **`firefox`** 和 **`微软 edge`** 的, 对于其它浏览器只能以文件形式手动安装.
+对于 _"允许访问文件 URL"_ 和 _"InPrivate 模式"_ 需要自己在插件管理里设置
 
-- [Firefox 浏览器](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词)
+- [**Firefox 浏览器**](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词)
 
-  对于 firefox 浏览器, 在安装后 **可能需要** 手动点开 "存取您在所有网站的数据" 权限, 因为需要注入 [content-script.js](build/js/content-script.js) 才能正常工作
+  在安装后 **可能需要** 手动点开 "存取您在所有网站的数据" 权限, 因为需要注入 [content-script.js](build/js/content-script.js) 才能正常工作
 
-- _微软 edge (正在审批中...)_
+- [**微软 edge**](https://microsoftedge.microsoft.com/addons/detail/nbgpdjbjdombofpabcedaohpagbblghm)
 
-#### 以文件形式手动安装
+- 其它浏览器只能以文件形式手动安装, 例如 : `brave`, `ungoogled chromium`, 或者 `chrome` 等其它 chromium 类型的浏览器
 
-手动安装仅适用于 chromium 类型的浏览器, 例如 : `brave`, `ungoogled chromium`, 或者 `chrome`
+  > 基于 chromium 的浏览器市面上有很多, 可自己搜素
 
-> 基于 chromium 的浏览器市面上有很多, 可自己搜素
+  1. **[下载](https://github.com/R32/extension-wordtranslator/archive/master.zip)** 并且 **解压**, 或直接 `git clone` 克隆这个项目
 
-1. **[下载](https://github.com/R32/extension-wordtranslator/archive/master.zip)** 并且 **解压**, 或直接 `git clone` 克隆这个项目
+  2. 进入浏览器的 “管理扩展程序”，(或在浏览器的地址栏中输入 : `chrome://extensions/` )
 
-2. 进入浏览器的 “管理扩展程序”，(或在浏览器的地址栏中输入 : `chrome://extensions/` )
+  3. 激活 "开发者模式" 选项
 
-3. 激活 "开发者模式" 选项
-
-4. 点击 “加载已解压的扩展程序” 按钮，选择 **`build`** 目录即可
+  4. 点击 “加载已解压的扩展程序” 按钮，选择 **`build`** 目录即可
 
 ### 使用
 
