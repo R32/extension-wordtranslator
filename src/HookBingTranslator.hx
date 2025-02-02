@@ -33,14 +33,14 @@ function flush(v) {
 	lazy_reply = null;
 }
 
-inline function from_id(id) : TextAreaElement return js.Syntax.code(id);
+inline function from_id(id) : DOMElement return js.Syntax.code(id);
 
 inline function play() from_id(TPLAY).click();
 
 var tid = -1;
 function polling( lvl : Int ) {
 	tid = -1;
-	var cur = from_id(TOUT).value;
+	var cur = text(from_id(TOUT));
 	if (lvl < 0) {
 		ens_clear();
 		cur = Timeout.locale();
@@ -74,7 +74,7 @@ function run( ens : String ) : Bool {
 		ens_add(ens);
 		sound = detects(ens);
 		var input = from_id(TIN);
-		input.value = ens;
+		text(input) = ens;
 		input.dispatchEvent(paste);
 		if (tid > 0)
 			window.clearTimeout(tid);
