@@ -36,13 +36,17 @@ inline function LANG() return chrome.I18n.getUILanguage();
 		lazy_reply = null;
 	}
 
+	var tab_query : Function = NOP;
+
 	function run( msg : Message ) {
-		if (tabid != -1) {
-			chrome.Tabs.sendMessage(tabid, msg).then(flush).catchError(function(_) {
-				flush(Wrong.locale());
-			});
+		if (tabid < 0) {
+			tab_query(msg);
 			return;
 		}
+		chrome.Tabs.sendMessage(tabid, msg).then(flush).catchError(flush);
+	}
+
+	tab_query = function( msg ) {
 		Tabs.query({ url : '${ SCHEME }*.${ BASE_URL }*'}, function(tabs) {
 			var tab = tabs[0];
 			if (tab == null || tab.status == UNLOADED) {
