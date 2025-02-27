@@ -30,9 +30,9 @@
 
 ### 安装
 
-- ~~[**Firefox 浏览器**](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词)~~ 还没更新
+- [**Firefox 浏览器**](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词) 注意安装完成后 **需要** 进入此插件的管理面板, 在 `权限` 选项卡中把 `访问您在所有网站的数据` 勾上
 
-- ~~[**微软 edge**](https://microsoftedge.microsoft.com/addons/detail/nbgpdjbjdombofpabcedaohpagbblghm)~~ 还没更新
+- [**微软 edge**](https://microsoftedge.microsoft.com/addons/detail/nbgpdjbjdombofpabcedaohpagbblghm) `1.2.3` 版本的可能还在审核中.
 
 - 其它浏览器需要手动安装, 例如 : `brave`, `ungoogled chromium`, 或其它 chromium 类型的浏览器
 
