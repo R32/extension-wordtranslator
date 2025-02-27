@@ -19,7 +19,7 @@ inline function skipped() {
 	var msg = new Message(Request, "");
 	var range : js.html.Range = null;
 	var view = document.getElementById(id);
-	if (view != null)
+	if (NOTNULL(view))
 		return;
 	view = HXX( <div id="{{ id }}">翻译</div> ); // TODO: a random word from localStorage wordlist
 
@@ -52,14 +52,14 @@ inline function skipped() {
 		view.style.top  = pos.y + e.screenY + "px";
 	}
 	var flush = function( s : String ) {
-		if (s != null)
+		if (NOTNULL(s))
 			text(view) = s;
 	}
 	view.onclick = function( e : PointerEvent ) {
 		e.stopPropagation();
 		if (hithead(e))
 			return;
-		if (range != null) {
+		if (NOTNULL(range)) {
 			var sel = document.getSelection();
 			if (!sel.isCollapsed && hitself(sel))
 				return;

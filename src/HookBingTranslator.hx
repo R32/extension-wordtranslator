@@ -19,10 +19,10 @@ inline function ens_diff(ens) return lst_ens != ens;
 var lazy_reply : Dynamic->Void;
 function flush(v) {
 	ens_commit();
-	if (lazy_reply == null)
-		return;
-	lazy_reply(v);
-	lazy_reply = null;
+	if (NOTNULL(lazy_reply)) {
+		lazy_reply(v);
+		lazy_reply = null;
+	}
 }
 
 var tid = -1;
@@ -108,14 +108,15 @@ function detects( ens : String ) {
 
 function main() {
 	chrome.Storage.local.get(KVOICES, function( res : StoreObj ) {
-		level = res[KVOICES] != null ? ESXTools.toInt(res[KVOICES]) : DEFAULT_LEVEL;
+		level = NOTNULL(res[KVOICES]) ? ESXTools.toInt(res[KVOICES]) : DEFAULT_LEVEL;
 	});
 	chrome.Runtime.onMessage.addListener(function( msg : Message, _, ?reply : Dynamic->Void ) {
 		LOG(msg);
 		switch (msg.kind) {
 		case Request:
-			if (lazy_reply != null)
+			if (NOTNULL(lazy_reply)) {
 				lazy_reply(null);
+			}
 			lazy_reply = reply;
 			return run(msg.value);
 		case Control:

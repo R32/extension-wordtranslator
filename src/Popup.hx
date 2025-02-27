@@ -13,7 +13,7 @@ var NOP = function(_){};
 function childpos( elem : DOMElement ) : Int {
 	var index = 0;
 	var prev = elem.previousSibling;
-	while (prev != null) {
+	while (NOTNULL(prev)) {
 		if (prev.nodeType == Node.ELEMENT_NODE)
 			index++;
 		prev = prev.previousSibling;
@@ -117,7 +117,7 @@ function main() {
 			ui_checked(ui_redirect, true);
 			set_redirect(true);
 		}
-		if (res[KVOICES] != null) {
+		if (NOTNULL(res[KVOICES])) {
 			var n = ESXTools.toInt(res[KVOICES]);
 			if (n > 0xFF) {
 				ui_checked(ui_voices, false);

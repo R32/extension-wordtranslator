@@ -18,10 +18,7 @@ import js.html.KeyboardEvent;
 // chrome extension
 
 // Macro
-import Macros.text;
-import Macros.display;
-import Macros.clsl;
-import Macros.LOG;
+import Macros.*;
 
 // Global
 import Global.CSS_INLINE_BLOCK;

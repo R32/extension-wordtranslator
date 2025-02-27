@@ -7,6 +7,9 @@ import haxe.macro.Expr;
 
 class Macros {
 
+	macro public static function NOTNULL(obj)
+		return macro @:pos(obj.pos) ($obj : Dynamic);
+
 	macro public static function text(elem)
 		return macro @:pos(elem.pos) ($elem : DOMElement).innerText;
 

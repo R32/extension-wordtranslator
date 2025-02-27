@@ -5,11 +5,10 @@ var lst_ens = null;
 var lazy_reply = null;
 function flush(v) {
 	lst_ens = tmp_ens;
-	if(lazy_reply == null) {
-		return;
+	if(lazy_reply) {
+		lazy_reply(v);
+		lazy_reply = null;
 	}
-	lazy_reply(v);
-	lazy_reply = null;
 }
 function polling(lvl) {
 	tid = -1;
@@ -76,12 +75,12 @@ function detects(ens) {
 }
 function main() {
 	chrome.storage.local.get("voices",function(res) {
-		level = res["voices"] != null ? (res["voices"] | 0) : 2;
+		level = res["voices"] ? (res["voices"] | 0) : 2;
 	});
 	chrome.runtime.onMessage.addListener(function(msg,_,reply) {
 		switch(msg[0]) {
 		case 1:
-			if(lazy_reply != null) {
+			if(lazy_reply) {
 				lazy_reply(null);
 			}
 			lazy_reply = reply;

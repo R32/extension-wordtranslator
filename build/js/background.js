@@ -4,17 +4,15 @@ function main() {
 	let tabid = -1;
 	let NOP = function(_) {
 	};
-	let BTURL = chrome.i18n.getUILanguage() == "zh-CN" ? "https://" + "cn." + "bing.com/translator" : "https://" + "bing.com/translator";
+	let BTURL = "https://" + (chrome.i18n.getUILanguage() == "zh-CN" ? "cn." : "") + "bing.com/translator";
 	let enable = true;
 	let lazy_reply = null;
 	let flush = function(v) {
-		if(lazy_reply == null) {
-			return;
+		if(lazy_reply) {
+			lazy_reply(v);
+			lazy_reply = null;
 		}
-		lazy_reply(v);
-		lazy_reply = null;
 	};
-	let tab_query = NOP;
 	let run = function(msg) {
 		if(tabid < 0) {
 			tab_query(msg);
@@ -22,15 +20,15 @@ function main() {
 		}
 		chrome.tabs.sendMessage(tabid,msg).then(flush).catch(flush);
 	};
-	tab_query = function(msg) {
+	let tab_query = function(msg) {
 		chrome.tabs.query({ url : "https://" + "*." + "bing.com/translator" + "*"},function(tabs) {
 			let tab = tabs[0];
 			if(tab == null || tab.status == "unloaded") {
 				flush(null);
-				if(tab == null) {
-					chrome.tabs.create({ url : BTURL, pinned : true});
-				} else {
+				if(tab) {
 					chrome.tabs.update(tab.id,{ active : true});
+				} else {
+					chrome.tabs.create({ url : BTURL, pinned : true});
 				}
 				return;
 			}
@@ -44,7 +42,7 @@ function main() {
 	chrome.runtime.onMessage.addListener(function(msg,_,reply) {
 		switch(msg[0]) {
 		case 1:
-			if(lazy_reply != null) {
+			if(lazy_reply) {
 				lazy_reply(null);
 			}
 			lazy_reply = reply;
@@ -79,7 +77,8 @@ function main() {
 		if(ishook && tabid == -1) {
 			tabid = t.tabId;
 		}
-		chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : [ishook ? "js/hook-bingtranslator.js" : "js/content-script.js"]}).catch(NOP);
+		let script = ishook ? "js/hook-bingtranslator.js" : "js/content-script.js";
+		chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : [script]}).catch(NOP);
 	});
 	chrome.tabs.onRemoved.addListener(function(id,_) {
 		if(id == tabid) {

@@ -18,7 +18,7 @@ inline function LANG() return chrome.I18n.getUILanguage();
 
 	var NOP = function(_){};
 
-	var BTURL = LANG() == "zh-CN" ? '${ SCHEME }cn.${ BASE_URL }' : '${ SCHEME }${ BASE_URL }';
+	var BTURL = SCHEME + (LANG() == "zh-CN" ? "cn." : "") + BASE_URL;
 
 	var enable = true; // Storage.local
 
@@ -30,31 +30,30 @@ inline function LANG() return chrome.I18n.getUILanguage();
 	}
 
 	function flush( v : Dynamic ) {
-		if (lazy_reply == null)
-			return;
-		lazy_reply(v);
-		lazy_reply = null;
+		if (NOTNULL(lazy_reply)) {
+			lazy_reply(v);
+			lazy_reply = null;
+		}
 	}
-
-	var tab_query : Function = NOP;
 
 	function run( msg : Message ) {
 		if (tabid < 0) {
-			tab_query(msg);
+			untyped tab_query(msg);
 			return;
 		}
 		chrome.Tabs.sendMessage(tabid, msg).then(flush).catchError(flush);
 	}
 
-	tab_query = function( msg ) {
+	function tab_query( msg ) {
 		Tabs.query({ url : '${ SCHEME }*.${ BASE_URL }*'}, function(tabs) {
 			var tab = tabs[0];
 			if (tab == null || tab.status == UNLOADED) {
 				flush(null);
-				if (tab == null)
-					Tabs.create({url : BTURL, pinned : true});
-				else
+				if (NOTNULL(tab)) {
 					Tabs.update(tab.id, {active : true});
+				} else {
+					Tabs.create({url : BTURL, pinned : true});
+				}
 				return;
 			}
 			REFRESH(tab.id);
@@ -70,8 +69,9 @@ inline function LANG() return chrome.I18n.getUILanguage();
 		LOG(msg);
 		switch (msg.kind) {
 		case Request:
-			if (lazy_reply != null)
+			if (NOTNULL(lazy_reply)) {
 				lazy_reply(null);
+			}
 			lazy_reply = reply;
 			run(msg);
 			return true; // keep the connection alive
@@ -79,8 +79,7 @@ inline function LANG() return chrome.I18n.getUILanguage();
 			var args = msg.value.split(":");
 			switch (args[0]) {
 			case KDISBLED:
-				var disabled = args[1] != "true";
-				enable = disabled;
+				enable = args[1] != "true";
 			case KVOICES if (tabid != -1):
 				chrome.Tabs.sendMessage(tabid, msg).catchError(NOP);
 			default:
