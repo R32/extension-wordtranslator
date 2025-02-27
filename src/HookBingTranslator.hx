@@ -3,19 +3,11 @@ package;
 import js.html.TextAreaElement;
  using StringTools;
 
-/*
- * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Sharing_objects_with_page_scripts
- */
-#if firefox
-@:native("wrappedJSObject") extern var wrappedJSObject : Dynamic;
-@:native("tta_input_ta") @:keep var tta_input_ta = wrappedJSObject.tta_input_ta;
-@:native("tta_output_ta") @:keep var tta_output_ta = wrappedJSObject.tta_output_ta;
-@:native("tta_playiconsrc") @:keep var tta_playiconsrc = wrappedJSObject.tta_playiconsrc;
-#end
-
-inline var TIN  = "tta_input_ta";
-inline var TOUT = "tta_output_ta";
-inline var TPLAY = "tta_playiconsrc";
+var TIN = document.getElementById("tta_input_ta");
+var TOUT = document.getElementById("tta_output_ta");
+var TPLAY = document.getElementById("tta_playiconsrc");
+var FDIN = TIN.tagName != "TEXTAREA" ? "innerText" : "value";
+var FDOUT = TOUT.tagName != "TEXTAREA" ? "innerText" : "value";
 
 var tmp_ens : String;
 var lst_ens : String;
@@ -33,14 +25,10 @@ function flush(v) {
 	lazy_reply = null;
 }
 
-inline function from_id(id) : DOMElement return js.Syntax.code(id);
-
-inline function play() from_id(TPLAY).click();
-
 var tid = -1;
 function polling( lvl : Int ) {
 	tid = -1;
-	var cur = text(from_id(TOUT));
+	var cur = (TOUT : Dynamic)[cast FDOUT];
 	if (lvl < 0) {
 		ens_clear();
 		cur = Timeout.locale();
@@ -50,7 +38,7 @@ function polling( lvl : Int ) {
 		while (i < len && cur.fastCodeAt(i) == " ".code)
 			i++;
 		if (i == len || cur.endsWith("...")) {
-			tid = window.setTimeout(polling, 600, lvl - 1);
+			tid = setTimeout(polling, 600, lvl - 1);
 			return;
 		}
 	}
@@ -73,18 +61,17 @@ function run( ens : String ) : Bool {
 	if (diff) {
 		ens_add(ens);
 		sound = detects(ens);
-		var input = from_id(TIN);
-		text(input) = ens;
-		input.dispatchEvent(paste);
-		if (tid > 0)
-			window.clearTimeout(tid);
-		tid = window.setTimeout(polling, 500, 10);
+		(TIN : Dynamic)[cast FDIN] = ens;
+		TIN.dispatchEvent(paste);
+		if (tid >= 0)
+			clearTimeout(tid);
+		tid = setTimeout(polling, 500, 10);
 	} else {
 		lazy_reply = null;
 	}
 	LOG("disable : " + (level > 0xFF) + ", level : " + (level & 0xFF) + ", sound : " + sound + ", diff : " + ens_diff(ens));
 	if (sound && level < 0xFF)
-		play();
+		TPLAY.click();
 	return diff;
 }
 

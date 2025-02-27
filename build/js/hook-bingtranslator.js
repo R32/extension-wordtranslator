@@ -13,7 +13,7 @@ function flush(v) {
 }
 function polling(lvl) {
 	tid = -1;
-	let cur = tta_output_ta.innerText;
+	let cur = TOUT[FDOUT];
 	if(lvl < 0) {
 		tmp_ens = null;
 		cur = chrome.i18n.getMessage("TIMEOUT");
@@ -22,7 +22,7 @@ function polling(lvl) {
 		let len = cur.length;
 		while(i < len && cur.charCodeAt(i) == 32) ++i;
 		if(i == len || cur.endsWith("...")) {
-			tid = window.setTimeout(polling,600,lvl - 1);
+			tid = setTimeout(polling,600,lvl - 1);
 			return;
 		}
 	}
@@ -34,18 +34,17 @@ function run(ens) {
 	if(diff) {
 		tmp_ens = ens;
 		sound = detects(ens);
-		let input = tta_input_ta;
-		input.innerText = ens;
-		input.dispatchEvent(paste);
-		if(tid > 0) {
-			window.clearTimeout(tid);
+		TIN[FDIN] = ens;
+		TIN.dispatchEvent(paste);
+		if(tid >= 0) {
+			clearTimeout(tid);
 		}
-		tid = window.setTimeout(polling,500,10);
+		tid = setTimeout(polling,500,10);
 	} else {
 		lazy_reply = null;
 	}
 	if(sound && level < 255) {
-		tta_playiconsrc.click();
+		TPLAY.click();
 	}
 	return diff;
 }
@@ -99,6 +98,11 @@ function main() {
 }
 {
 }
+var TIN = document.getElementById("tta_input_ta");
+var TOUT = document.getElementById("tta_output_ta");
+var TPLAY = document.getElementById("tta_playiconsrc");
+var FDIN = TIN.tagName != "TEXTAREA" ? "innerText" : "value";
+var FDOUT = TOUT.tagName != "TEXTAREA" ? "innerText" : "value";
 var tid = -1;
 var level = 2;
 var paste = new InputEvent("input",{ bubbles : true});
