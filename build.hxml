@@ -22,7 +22,6 @@
 --js build/js/content-script.js
 
 --next
--D js-classic
 -main HookBingTranslator
 --js build/js/hook-bingtranslator.js
 --macro maux.ModuleLevel.strip(['HookBingTranslator'])
