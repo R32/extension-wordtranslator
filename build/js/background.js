@@ -66,11 +66,8 @@ function main() {
 		return false;
 	});
 	chrome.webNavigation.onDOMContentLoaded.addListener(function(t) {
-		let scheme = t.url.substring(0,4);
-		if(!(scheme == "http" || scheme == "file")) {
-			return;
-		}
-		let ishook = t.url.indexOf("bing.com/translator",7) > 0;
+		let sub = t.url.substring(8,32);
+		let ishook = sub.indexOf("bing.com/translator") >= 0;
 		if(!(enable || ishook)) {
 			return;
 		}

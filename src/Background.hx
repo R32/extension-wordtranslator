@@ -89,11 +89,9 @@ inline function LANG() return chrome.I18n.getUILanguage();
 	});
 
 	chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {
-		var scheme = t.url.substring(0, 4);
-		if (!(scheme == "http" || scheme == "file"))
-			return;
 		LOG('frametype : ${t.frameType}, doc : ${t.documentLifecycle}, url : ${t.url}');
-		var ishook = t.url.indexOf(BASE_URL, 7) > 0; // "http://".length
+		var sub = t.url.substring(8, 32); // "https://XX.bing.com/translator"
+		var ishook = sub.indexOf(BASE_URL) >= 0;
 
 		if (!(enable || ishook)) // inject hook-bing.js even if enable == false
 			return;
