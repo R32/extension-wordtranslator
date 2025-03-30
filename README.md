@@ -1,7 +1,7 @@
 羊毛查词
 --------
 
-这是一个极度轻量化的用于 chromium 类浏览器的单词或短句插件，其目的是取代国内不再可用的“google 翻译插件”
+这是一个极度轻量化的用于 chromium 类浏览器的单词或短句划词翻译插件，其目的是取代国内不再可用的“google 翻译插件”
 
 **重要** 此插件是通过与 [微软必应翻译网页](https://cn.bing.com/translator) 互动来实现的，
 因此浏览器需要 **至少保持一个翻译网页作为后台**, 并设置好输入框和输出框的语言
@@ -26,13 +26,13 @@
 
 - 浏览器需要保持一个的 "必应翻译" 网页作为后台
 
-- 不支持 PDF 文件
+- 不支持 PDF 文件 (对于 PDF, 强烈推荐Win10+ 自带的 EDGE 浏览器, 自带了对 PDF 的划词翻译)
 
 ### 安装
 
 - [**Firefox 浏览器**](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词) 注意安装完成后 **需要** 进入此插件的管理面板, 在 `权限` 选项卡中把 `访问您在所有网站的数据` 勾上
 
-- [**微软 edge**](https://microsoftedge.microsoft.com/addons/detail/nbgpdjbjdombofpabcedaohpagbblghm) `1.2.3` 版本的可能还在审核中.
+- [**微软 edge**](https://microsoftedge.microsoft.com/addons/detail/nbgpdjbjdombofpabcedaohpagbblghm)
 
 - 其它浏览器需要手动安装, 例如 : `brave`, `ungoogled chromium`, 或其它 chromium 类型的浏览器
 
@@ -75,9 +75,9 @@
 
     这是由于浏览器会回收"不活动的页面", 因此要自己切换到 "必应翻译" 网页, 并在网页上随便点下或刷新
 
-- 点击 `弹出小窗口` 后, 弹出英语的错误提示
+- 点击 `弹出小窗口` 后, 弹出`[object Object]`
 
-    绝大多数情况下, 再次尝试点击 `弹出小窗口` 可以解决此问题, 或参考上一个问题的解决方案去激活下页面
+    绝大多数情况下, 再次点击一次 `弹出小窗口` 可以解决此问题, 或参考上一个问题的解决方案去激活下页面
 
 ### 更新
 
