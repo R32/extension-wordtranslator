@@ -96,13 +96,20 @@ inline function LANG() return chrome.I18n.getUILanguage();
 		if (!(enable || ishook)) // inject hook-bing.js even if enable == false
 			return;
 
+		var target : chrome.Scripting.InjectionTarget = {tabId : t.tabId};
+		if (t.frameId > 0) {
+			if (ishook)
+				return;
+			target.frameIds = [t.frameId];
+		}
+
 		if (ishook && tabid == -1)
 			REFRESH(t.tabId);
 
 		var script = ishook ? "js/hook-bingtranslator.js" : "js/content-script.js";
 
 		chrome.Scripting.executeScript({
-			target : {tabId : t.tabId},
+			target : target,
 			files : [script],
 		}).catchError(NOP);
 	});

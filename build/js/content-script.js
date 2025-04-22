@@ -5,7 +5,7 @@ function halt(e) {
 	e.stopPropagation();
 }
 function main() {
-	if(document.body == null || document.documentElement.lang.startsWith("zh") && chrome.i18n.getUILanguage().startsWith("zh")) {
+	if(document.body == null || document.body.tagName != "BODY" || document.documentElement.lang.startsWith("zh") && chrome.i18n.getUILanguage().startsWith("zh")) {
 		return;
 	}
 	let pos_y;

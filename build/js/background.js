@@ -71,11 +71,18 @@ function main() {
 		if(!(enable || ishook)) {
 			return;
 		}
+		let target = { tabId : t.tabId};
+		if(t.frameId > 0) {
+			if(ishook) {
+				return;
+			}
+			target.frameIds = [t.frameId];
+		}
 		if(ishook && tabid == -1) {
 			tabid = t.tabId;
 		}
 		let script = ishook ? "js/hook-bingtranslator.js" : "js/content-script.js";
-		chrome.scripting.executeScript({ target : { tabId : t.tabId}, files : [script]}).catch(NOP);
+		chrome.scripting.executeScript({ target : target, files : [script]}).catch(NOP);
 	});
 	chrome.tabs.onRemoved.addListener(function(id,_) {
 		if(id == tabid) {

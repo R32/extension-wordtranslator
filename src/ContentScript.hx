@@ -12,7 +12,7 @@ inline function skipped() {
 }
 
 @:native("main") function main() {
-	if (document.body == null || skipped())
+	if (document.body == null || document.body.tagName != "BODY" || skipped())
 		return;
 	var id = "yangmaowords";
 	var pos = {x : 0, y : 0};
