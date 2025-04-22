@@ -73,7 +73,7 @@ function main() {
 		}
 		let target = { tabId : t.tabId};
 		if(t.frameId > 0) {
-			if(ishook) {
+			if(ishook || t.tabId == tabid) {
 				return;
 			}
 			target.frameIds = [t.frameId];

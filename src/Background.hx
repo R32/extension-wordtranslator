@@ -98,7 +98,7 @@ inline function LANG() return chrome.I18n.getUILanguage();
 
 		var target : chrome.Scripting.InjectionTarget = {tabId : t.tabId};
 		if (t.frameId > 0) {
-			if (ishook)
+			if (ishook || t.tabId == tabid)
 				return;
 			target.frameIds = [t.frameId];
 		}
