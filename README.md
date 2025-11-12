@@ -1,7 +1,7 @@
 羊毛查词
 --------
 
-这是一个极度轻量化的用于 chromium 类浏览器的划词翻译插件，其目的是取代国内不再可用的 “google 翻译插件”
+这是一个极度轻量化的用于 chromium 浏览器的划词翻译插件，其目的是取代国内不再可用的 “google 翻译插件”
 
 **重要** 此插件的实现原理是通过与 [微软必应翻译网页](https://cn.bing.com/translator) 互动来实现的，
 因此浏览器需要 **至少保持一个翻译网页作为后台**, 并设置好输入框和输出框的语言
@@ -16,23 +16,21 @@
 
 相较于其它同类型插件的优点 :
 
-- CPU, 内存占用低 (所有代码没有压缩仅仅才 12KB 左右, 不使用任何第三方库)
+- CPU, 内存占用低, 所有代码没有压缩仅仅才 12KB 左右, 不依赖任何第三方库
 
-- 无任何费用
-
-- 不收集任何数据
+- 无任何费用, 不收集任何数据
 
 缺点 :
 
-- 浏览器需要保持一个的 "必应翻译" 网页作为后台
+- 浏览器需要保持一个的 "必应翻译" 网页作为后台, 因此只有 "必应翻译" 提供的翻译
 
-- 不支持 PDF 文件 (对于 PDF, 强烈推荐 Windows 系统自带的 EDGE 浏览器所自带的 PDF 划词翻译)
+- 不支持 PDF 文件 (对于 PDF, 微软 EDGE 浏览器自带的 PDF 划词翻译是最好用的)
 
 ### 安装
 
 - [**Firefox 浏览器**](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词) 注意安装完成后 **需要** 进入此插件的管理面板, 在 `权限` 选项卡中把 `访问您在所有网站的数据` 勾上
 
-- [**微软 edge**](https://microsoftedge.microsoft.com/addons/detail/nbgpdjbjdombofpabcedaohpagbblghm)
+- [**微软 edge**](https://microsoftedge.microsoft.com/addons/detail/nbgpdjbjdombofpabcedaohpagbblghm) 由于显示冲突, 浏览器需要关闭 `上下文菜单` 里的 `选择文本时显示迷你菜单`
 
 - 其它浏览器需要手动安装, 例如 : `brave`, `ungoogled chromium`, 或其它 chromium 类型的浏览器
 
