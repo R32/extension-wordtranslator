@@ -24,9 +24,11 @@ extern enum abstract LocaleString(String) to String {
 extern enum abstract StoreKey(String) to String {
 	var KDISBLED = "disabled";
 	var KVOICES = "voices";
+	var KVSPEED = "vspeed";
 	var KREDIRECT = "redirect";
-	public inline function join( v : Dynamic ) : StoreObj
+	public inline function combine( v : Dynamic ) : StoreObj { // WARNING : don't use it with variable
 		return js.Syntax.code("{{0} : {1}}", this, v);
+	}
 }
 
 typedef StoreObj = haxe.DynamicAccess<Dynamic>;

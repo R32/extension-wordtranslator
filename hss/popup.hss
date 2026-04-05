@@ -35,10 +35,11 @@ body {
 	> label {
 		display : block;
 		text-align : left;
-		width : $font-size * 10;
+		width : $font-size * 10.5;
 		padding : $padding-size $padding-size * 2;
 		color : var(--color-font);
-		user-select: none;
+		user-select : none;
+		white-space : nowrap;
 		cursor : pointer;
 		&:hover {
 			background-color : var(--color-gray-lighten);
@@ -55,6 +56,9 @@ body {
 			cursor : auto;
 			pointer-events : none;
 			background-color : var(--color-background);
+		}
+		> span {
+			font-size : $font-size * .75;
 		}
 		> input {
 			float : right;

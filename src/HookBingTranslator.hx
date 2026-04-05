@@ -1,5 +1,6 @@
 package;
 
+import ESXTools.toInt;
 import js.html.TextAreaElement;
  using StringTools;
 
@@ -105,10 +106,12 @@ function detects( ens : String ) {
 	}
 	return true;
 }
-
 function main() {
-	chrome.Storage.local.get(KVOICES, function( res : StoreObj ) {
-		level = NOTNULL(res[KVOICES]) ? ESXTools.toInt(res[KVOICES]) : DEFAULT_LEVEL;
+	chrome.Storage.local.get([KVOICES, KVSPEED], function( res : StoreObj ) {
+		if (NOTNULL(res[KVOICES]))
+			level = toInt(res[KVOICES]);
+		if (NOTNULL(res[KVSPEED]))
+			TPLAY.dispatchEvent(new js.html.CustomEvent("playbackRate", {detail : toInt(res[KVSPEED])}));
 	});
 	chrome.Runtime.onMessage.addListener(function( msg : Message, _, ?reply : Dynamic->Void ) {
 		LOG(msg);
@@ -121,8 +124,13 @@ function main() {
 			return run(msg.value);
 		case Control:
 			var args = msg.value.split(":");
-			if (args[0] == KVOICES)
-				level = ESXTools.toInt(args[1]);
+			var type = args[0];
+			var value = toInt(args[1]);
+			if (type == KVOICES) {
+				level = value;
+			} else if (type == KVSPEED) {
+				TPLAY.dispatchEvent(new js.html.CustomEvent("playbackRate", {detail : value}));
+			}
 		}
 		return false;
 	});

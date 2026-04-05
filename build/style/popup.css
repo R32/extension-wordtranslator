@@ -27,10 +27,11 @@ body > a:hover {
 #menumain > label {
 	display : block;
 	text-align : left;
-	width : 120pt;
+	width : 126pt;
 	padding : 6pt 12pt;
 	color : var(--color-font);
 	user-select : none;
+	white-space : nowrap;
 	cursor : pointer;
 }
 #menumain > label:hover {
@@ -47,6 +48,9 @@ body > a:hover {
 	cursor : auto;
 	pointer-events : none;
 	background-color : var(--color-background);
+}
+#menumain > label > span {
+	font-size : 9pt;
 }
 #menumain > label > input {
 	float : right;

@@ -80,13 +80,17 @@ inline function LANG() return chrome.I18n.getUILanguage();
 			switch (args[0]) {
 			case KDISBLED:
 				enable = args[1] != "true";
-			case KVOICES if (tabid != -1):
+			case KVOICES, KVSPEED if (tabid != -1):
 				chrome.Tabs.sendMessage(tabid, msg).catchError(NOP);
 			default:
 			}
 		}
 		return false;
 	});
+
+	function exec(tab, file, ?world) {
+		chrome.Scripting.executeScript({target : tab, files : [file], world : world}).catchError(NOP);
+	}
 
 	chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {
 		LOG('frametype : ${t.frameType}, doc : ${t.documentLifecycle}, url : ${t.url}');
@@ -103,15 +107,15 @@ inline function LANG() return chrome.I18n.getUILanguage();
 			target.frameIds = [t.frameId];
 		}
 
-		if (ishook && tabid == -1)
+		if (!ishook) {
+			exec(target, "js/content-script.js");
+			return;
+		}
+
+		if (tabid == -1)
 			REFRESH(t.tabId);
-
-		var script = ishook ? "js/hook-bingtranslator.js" : "js/content-script.js";
-
-		chrome.Scripting.executeScript({
-			target : target,
-			files : [script],
-		}).catchError(NOP);
+		exec(target, "js/hook-bingaudiospeed.js", MAIN);
+		exec(target, "js/hook-bingtranslator.js");
 	});
 
 	chrome.Tabs.onRemoved.addListener(function(id, _) {
