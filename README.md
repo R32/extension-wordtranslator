@@ -28,13 +28,13 @@
 
 ### 安装
 
-- [**Firefox 浏览器**](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词) 注意安装完成后 **需要** 进入此插件的管理面板, 在 `权限` 选项卡中把 `访问您在所有网站的数据` 勾上
+- 未更新 ~~[**Firefox 浏览器**](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词) 注意安装完成后 **需要** 进入此插件的管理面板, 在 `权限` 选项卡中把 `访问您在所有网站的数据` 勾上~~
 
-- [**微软 edge**](https://microsoftedge.microsoft.com/addons/detail/nbgpdjbjdombofpabcedaohpagbblghm) 由于显示冲突, 浏览器需要关闭 `上下文菜单` 里的 `选择文本时显示迷你菜单`
+- 未更新 ~~[**微软 edge**](https://microsoftedge.microsoft.com/addons/detail/nbgpdjbjdombofpabcedaohpagbblghm) 由于显示冲突, 浏览器需要关闭 `上下文菜单` 里的 `选择文本时显示迷你菜单`~~
 
 - 其它浏览器需要手动安装, 例如 : `ungoogled chromium`, `brave`, 或其它 chromium 类型的浏览器
 
-  1. **[下载](https://github.com/R32/extension-wordtranslator/archive/master.zip)** 并且 **解压**, 或直接 `git clone` 克隆这个项目
+  1. 推荐直接 `git clone` 克隆这个项目, 或者 **[下载](https://github.com/R32/extension-wordtranslator/archive/master.zip)** 并且解压
 
   2. 进入浏览器的 “管理扩展程序”，(或在浏览器的地址栏中输入 : `chrome://extensions/` )
 
