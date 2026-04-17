@@ -15,6 +15,7 @@
 -D js-global=globalThis
 -main Background
 --js build/js/background.js
+--macro maux.ModuleLevel.strip(['Background'])
 
 --next
 -main ContentScript

@@ -38,7 +38,7 @@ clean:
 .PHONY: all bg hook popup content hss clean
 
 $(BG): $(SRC)/Background.hx $(COMMON)
-	haxe $(HAXEFLAGS) -D js-global=globalThis --js $@ --main Background
+	haxe $(HAXEFLAGS) -D js-global=globalThis --js $@ --main Background --macro maux.ModuleLevel.strip\([\'Background\']\)
 
 $(HOOK1): $(SRC)/HookBingAudioSpeed.hx $(COMMON)
 	haxe $(HAXEFLAGS) --js $@ --main HookBingAudioSpeed --macro maux.ModuleLevel.strip\([\'HookBingAudioSpeed\']\)

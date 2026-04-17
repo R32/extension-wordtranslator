@@ -24,7 +24,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="Background" />
     <option enabledebug="False" />
-    <option additional="-dce full&#xA;--macro exclude('haxe.iterators.ArrayIterator')" />
+    <option additional="-dce full&#xA;--macro exclude('haxe.iterators.ArrayIterator')&#xA;--macro maux.ModuleLevel.strip(['Background'])" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

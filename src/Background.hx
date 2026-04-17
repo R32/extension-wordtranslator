@@ -2,68 +2,62 @@ package;
 
 import chrome.Tabs;
 
+inline var SCHEME = "https://";
+
 inline var BASE_URL = "bing.com/translator";
 
-inline var SCHEME = "https://";
+inline function REFRESH(id) tabid = id;
 
 inline function LANG() return chrome.I18n.getUILanguage();
 
-/*
- * TODO : For non-persistent backends, the doc says : "do not rely on global variables",
- * But that seems impossible to do it, because you can't store functions to "Storage.session".
- */
-@:native("main") function main()
-{
-	var tabid = -1;
+function NOP(_){}
 
-	var NOP = function(_){};
+var tabid = -1;
 
-	var BTURL = SCHEME + (LANG() == "zh-CN" ? "cn." : "") + BASE_URL;
+var acquired = 0;  // the count of chrome.Tabs.sendMessage(...)
 
-	var enable = true; // Storage.local
+var enable = true; // Storage.local
 
-	var lazy_reply : Dynamic->Void = null;
+var lazy_reply : Dynamic->Void = null;
 
-	inline function REFRESH(id) {
-		tabid = id;
-		//// chrome.Storage.session.set({tabid : id}); // session store
+function flush( v : Dynamic ) {
+	acquired--;
+	if (NOTNULL(lazy_reply) && acquired == 0) {
+		lazy_reply(v);
+		lazy_reply = null;
 	}
+}
 
-	var acquired = 0; // the count of chrome.Tabs.sendMessage(...)
-
-	function flush( v : Dynamic ) {
-		acquired--;
-		if (NOTNULL(lazy_reply) && acquired <= 0) {
-			lazy_reply(v);
-			lazy_reply = null;
-		}
+function run( msg : Message ) {
+	if (tabid < 0) {
+		query(msg);
+		return;
 	}
+	chrome.Tabs.sendMessage(tabid, msg).then(flush).catchError(flush);
+}
 
-	function run( msg : Message ) {
-		if (tabid < 0) {
-			untyped tab_query(msg);
+function query( msg ) {
+	Tabs.query({ url : '${ SCHEME }*.${ BASE_URL }*' }, function(tabs) {
+		var tab = tabs[0];
+		if (tab == null || tab.status == UNLOADED) {
+			flush(null);
+			if (NOTNULL(tab)) {
+				Tabs.update(tab.id, {active : true});
+			} else {
+				Tabs.create({url : SCHEME + (LANG() == "zh-CN" ? "cn." : "") + BASE_URL, pinned : true});
+			}
 			return;
 		}
-		// BEWARE: on multiple clicks, the HOOK page immediately returns NULL, but Runtime.onMessage(...) has already handled them.
-		chrome.Tabs.sendMessage(tabid, msg).then(flush).catchError(flush);
-	}
+		REFRESH(tab.id);
+		run(msg);
+	});
+}
 
-	function tab_query( msg ) {
-		Tabs.query({ url : '${ SCHEME }*.${ BASE_URL }*'}, function(tabs) {
-			var tab = tabs[0];
-			if (tab == null || tab.status == UNLOADED) {
-				flush(null);
-				if (NOTNULL(tab)) {
-					Tabs.update(tab.id, {active : true});
-				} else {
-					Tabs.create({url : BTURL, pinned : true});
-				}
-				return;
-			}
-			REFRESH(tab.id);
-			run(msg);
-		});
-	}
+function exec(tab, file, ?world) {
+	chrome.Scripting.executeScript({target : tab, files : [file], world : world}).catchError(NOP);
+}
+
+function main() {
 
 	chrome.Storage.local.get(KDISBLED, function( res : StoreObj ) {
 		enable = !res[KDISBLED];
@@ -93,10 +87,6 @@ inline function LANG() return chrome.I18n.getUILanguage();
 		}
 		return false;
 	});
-
-	function exec(tab, file, ?world) {
-		chrome.Scripting.executeScript({target : tab, files : [file], world : world}).catchError(NOP);
-	}
 
 	chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {
 		LOG('frametype : ${t.frameType}, doc : ${t.documentLifecycle}, url : ${t.url}');
