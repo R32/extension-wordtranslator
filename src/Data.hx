@@ -26,7 +26,8 @@ extern enum abstract StoreKey(String) to String {
 	var KVOICES = "voices";
 	var KVSPEED = "vspeed";
 	var KREDIRECT = "redirect";
-	public inline function combine( v : Dynamic ) : StoreObj { // WARNING : don't use it with variable
+	// BUGBUG : DO NOT USE WITH VARIABLES.
+	public inline function combine( v : Dynamic ) : StoreObj {
 		return js.Syntax.code("{{0} : {1}}", this, v);
 	}
 }
