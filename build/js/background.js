@@ -7,8 +7,10 @@ function main() {
 	let BTURL = "https://" + (chrome.i18n.getUILanguage() == "zh-CN" ? "cn." : "") + "bing.com/translator";
 	let enable = true;
 	let lazy_reply = null;
+	let acquired = 0;
 	let flush = function(v) {
-		if(lazy_reply) {
+		acquired -= 1;
+		if(lazy_reply && acquired <= 0) {
 			lazy_reply(v);
 			lazy_reply = null;
 		}
@@ -42,6 +44,7 @@ function main() {
 	chrome.runtime.onMessage.addListener(function(msg,_,reply) {
 		switch(msg[0]) {
 		case 1:
+			acquired += 1;
 			if(lazy_reply) {
 				lazy_reply(null);
 			}

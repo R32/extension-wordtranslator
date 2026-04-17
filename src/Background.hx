@@ -29,8 +29,11 @@ inline function LANG() return chrome.I18n.getUILanguage();
 		//// chrome.Storage.session.set({tabid : id}); // session store
 	}
 
+	var acquired = 0; // the count of chrome.Tabs.sendMessage(...)
+
 	function flush( v : Dynamic ) {
-		if (NOTNULL(lazy_reply)) {
+		acquired--;
+		if (NOTNULL(lazy_reply) && acquired <= 0) {
 			lazy_reply(v);
 			lazy_reply = null;
 		}
@@ -41,6 +44,7 @@ inline function LANG() return chrome.I18n.getUILanguage();
 			untyped tab_query(msg);
 			return;
 		}
+		// BEWARE: on multiple clicks, the HOOK page immediately returns NULL, but Runtime.onMessage(...) has already handled them.
 		chrome.Tabs.sendMessage(tabid, msg).then(flush).catchError(flush);
 	}
 
@@ -69,7 +73,9 @@ inline function LANG() return chrome.I18n.getUILanguage();
 		LOG(msg);
 		switch (msg.kind) {
 		case Request:
+			acquired++;
 			if (NOTNULL(lazy_reply)) {
+				// Discard the previous request, but be careful — the previous promise from Tabs.SendMessage(...) still exists and cannot be canceled.
 				lazy_reply(null);
 			}
 			lazy_reply = reply;
