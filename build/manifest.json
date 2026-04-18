@@ -2,8 +2,10 @@
 	"default_locale": "zh",
 	"name": "__MSG_APP_NAME__",
 	"version": "1.2.7",
+	"version_name": "1.2.7 @c3e737c",
 	"manifest_version": 3,
 	"description": "__MSG_DESCRIPTION__",
+	"homepage_url": "https://github.com/R32/extension-wordtranslator",
 
 	"minimum_chrome_version": "88",
 
