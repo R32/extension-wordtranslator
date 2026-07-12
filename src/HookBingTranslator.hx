@@ -72,7 +72,7 @@ function run( ens : String ) : Bool {
 	}
 	LOG("disable : " + (level > 0xFF) + ", level : " + (level & 0xFF) + ", sound : " + sound + ", diff : " + ens_diff(ens));
 	if (sound && level < 0xFF)
-		TPLAY.click();
+		try TPLAY.click() catch (_) {} // catch errors to keep the response going.
 	return diff;
 }
 

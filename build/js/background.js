@@ -3,7 +3,9 @@
 function NOP(_) {
 }
 function flush(v) {
-	acquired--;
+	if(acquired > 0) {
+		acquired--;
+	}
 	if(lazy_reply && acquired == 0) {
 		lazy_reply(v);
 		lazy_reply = null;
@@ -84,6 +86,7 @@ function main() {
 		}
 		if(tabid == -1) {
 			tabid = t.tabId;
+			while(acquired > 0) flush(null);
 		}
 		exec(target,"js/hook-bingaudiospeed.js","MAIN");
 		exec(target,"js/hook-bingtranslator.js");

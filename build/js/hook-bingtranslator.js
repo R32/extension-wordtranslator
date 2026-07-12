@@ -43,7 +43,10 @@ function run(ens) {
 		lazy_reply = null;
 	}
 	if(sound && level < 255) {
-		TPLAY.click();
+		try {
+			TPLAY.click();
+		} catch( _g ) {
+		}
 	}
 	return diff;
 }

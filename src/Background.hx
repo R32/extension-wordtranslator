@@ -21,7 +21,8 @@ var enable = true; // Storage.local
 var lazy_reply : Dynamic->Void = null;
 
 function flush( v : Dynamic ) {
-	acquired--;
+	if (acquired > 0)
+		acquired--;
 	if (NOTNULL(lazy_reply) && acquired == 0) {
 		lazy_reply(v);
 		lazy_reply = null;
@@ -108,8 +109,11 @@ function main() {
 			return;
 		}
 
-		if (tabid == -1)
+		if (tabid == -1) {
 			REFRESH(t.tabId);
+			while (acquired > 0)
+				flush(null);
+		}
 		exec(target, "js/hook-bingaudiospeed.js", MAIN);
 		exec(target, "js/hook-bingtranslator.js");
 	});
