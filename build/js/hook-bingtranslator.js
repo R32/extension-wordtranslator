@@ -42,11 +42,8 @@ function run(ens) {
 	} else {
 		lazy_reply = null;
 	}
-	if(sound && level < 255) {
-		try {
-			TPLAY.click();
-		} catch( _g ) {
-		}
+	if(sound && level < 255 && navigator.userActivation.hasBeenActive) {
+		TPLAY.click();
 	}
 	return diff;
 }

@@ -108,9 +108,10 @@ function main() {
 			exec(target, "js/content-script.js");
 			return;
 		}
-
-		if (tabid == -1) {
+		if (tabid == -1) { // load new
 			REFRESH(t.tabId);
+		}
+		if (tabid == t.tabId) { // refresh/reload
 			while (acquired > 0)
 				flush(null);
 		}

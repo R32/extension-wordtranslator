@@ -86,6 +86,8 @@ function main() {
 		}
 		if(tabid == -1) {
 			tabid = t.tabId;
+		}
+		if(tabid == t.tabId) {
 			while(acquired > 0) flush(null);
 		}
 		exec(target,"js/hook-bingaudiospeed.js","MAIN");

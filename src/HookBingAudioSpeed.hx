@@ -8,7 +8,11 @@ var irate = 100;
 function rate_play() {
 	var frate = irate / 100.;
 	nativeThis.playbackRate = frate;
-	nativeThis.origin_play();
+	var promise : Promise<Any> = nativeThis.origin_play();
+	// Browsers released before 2019 may not return a value from play()
+	if ((promise : Dynamic)) {
+		promise.catchError((console:Dynamic).log);
+	}
 }
 
 inline function rate_attach() {

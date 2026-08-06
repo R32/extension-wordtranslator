@@ -3,7 +3,10 @@
 function rate_play() {
 	let frate = irate / 100.;
 	this.playbackRate = frate;
-	this.origin_play();
+	let promise = this.origin_play();
+	if(promise) {
+		promise.catch(console.log);
+	}
 }
 function main() {
 	HTMLAudioElement.prototype.origin_play = HTMLAudioElement.prototype.play;

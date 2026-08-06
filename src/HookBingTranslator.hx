@@ -71,8 +71,8 @@ function run( ens : String ) : Bool {
 		lazy_reply = null;
 	}
 	LOG("disable : " + (level > 0xFF) + ", level : " + (level & 0xFF) + ", sound : " + sound + ", diff : " + ens_diff(ens));
-	if (sound && level < 0xFF)
-		try TPLAY.click() catch (_) {} // catch errors to keep the response going.
+	if (sound && level < 0xFF && (navigator : Dynamic).userActivation.hasBeenActive)
+		TPLAY.click();
 	return diff;
 }
 
