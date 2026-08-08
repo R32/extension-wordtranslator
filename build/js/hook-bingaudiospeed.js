@@ -10,7 +10,7 @@ function rate_play() {
 }
 function main() {
 	HTMLAudioElement.prototype.origin_play = HTMLAudioElement.prototype.play;
-	TPLAY.addEventListener("playbackRate",function(e) {
+	TPLAY.addEventListener("wm.rate",function(e) {
 		irate = e.detail;
 		if(irate < 100) {
 			HTMLAudioElement.prototype.play = rate_play;
@@ -18,10 +18,15 @@ function main() {
 			HTMLAudioElement.prototype.play = HTMLAudioElement.prototype.origin_play;
 		}
 	});
+	sj_evt.bind("tt.domStable",function() {
+		TOUT.dispatchEvent(finish);
+	});
 }
 {
 }
 var TPLAY = document.getElementById("tta_playiconsrc");
+var TOUT = document.getElementById("tta_output_ta");
+var finish = new CustomEvent("wm.finish");
 var irate = 100;
 main();
 })(window);

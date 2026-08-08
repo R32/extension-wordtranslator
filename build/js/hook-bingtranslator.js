@@ -4,28 +4,12 @@ var tmp_ens = null;
 var lst_ens = null;
 var lazy_reply = null;
 function flush(v) {
+	if(lazy_reply == null) {
+		return;
+	}
+	lazy_reply(v);
+	lazy_reply = null;
 	lst_ens = tmp_ens;
-	if(lazy_reply) {
-		lazy_reply(v);
-		lazy_reply = null;
-	}
-}
-function polling(lvl) {
-	tid = -1;
-	let cur = TOUT[FDOUT];
-	if(lvl < 0) {
-		tmp_ens = null;
-		cur = chrome.i18n.getMessage("TIMEOUT");
-	} else {
-		let i = 0;
-		let len = cur.length;
-		while(i < len && cur.charCodeAt(i) == 32) ++i;
-		if(i == len || cur.endsWith("...")) {
-			tid = setTimeout(polling,600,lvl - 1);
-			return;
-		}
-	}
-	flush(cur);
 }
 var sound = null;
 function run(ens) {
@@ -35,11 +19,8 @@ function run(ens) {
 		sound = detects(ens);
 		TIN[FDIN] = ens;
 		TIN.dispatchEvent(paste);
-		if(tid >= 0) {
-			clearTimeout(tid);
-		}
-		tid = setTimeout(polling,500,10);
 	} else {
+		lazy_reply(null);
 		lazy_reply = null;
 	}
 	if(sound && level < 255 && navigator.userActivation.hasBeenActive) {
@@ -79,7 +60,7 @@ function main() {
 			level = (res["voices"] | 0);
 		}
 		if(res["vspeed"]) {
-			TPLAY.dispatchEvent(new CustomEvent("playbackRate",{ detail : (res["vspeed"] | 0)}));
+			TPLAY.dispatchEvent(new CustomEvent("wm.rate",{ detail : (res["vspeed"] | 0)}));
 		}
 	});
 	chrome.runtime.onMessage.addListener(function(msg,_,reply) {
@@ -97,11 +78,14 @@ function main() {
 			if(type == "voices") {
 				level = value;
 			} else if(type == "vspeed") {
-				TPLAY.dispatchEvent(new CustomEvent("playbackRate",{ detail : value}));
+				TPLAY.dispatchEvent(new CustomEvent("wm.rate",{ detail : value}));
 			}
 			break;
 		}
 		return false;
+	});
+	TOUT.addEventListener("wm.finish",function() {
+		flush(this[FDOUT]);
 	});
 }
 {
@@ -111,7 +95,6 @@ var TOUT = document.getElementById("tta_output_ta");
 var TPLAY = document.getElementById("tta_playiconsrc");
 var FDIN = TIN.tagName != "TEXTAREA" ? "innerText" : "value";
 var FDOUT = TOUT.tagName != "TEXTAREA" ? "innerText" : "value";
-var tid = -1;
 var level = 2;
 var paste = new InputEvent("input",{ bubbles : true});
 main();

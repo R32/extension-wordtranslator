@@ -26,6 +26,9 @@ import Global.CSS_BLOCK;
 import Global.CSS_NONE;
 import Global.CSS_EMPTY;
 
+import Global.CE_RATE;
+import Global.CE_FINISH;
+
 // import all module-level fields
 import Global;
 #end

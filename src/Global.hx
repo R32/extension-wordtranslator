@@ -9,6 +9,10 @@ class Global {
 	public static inline var CSS_INLINE_BLOCK = "inline-block";
 
 	public static inline var CSS_EMPTY = "";
+
+	public static inline var CE_RATE = "wm.rate";
+
+	public static inline var CE_FINISH = "wm.finish";
 }
 
 @:native("console") extern var console : js.html.ConsoleInstance;

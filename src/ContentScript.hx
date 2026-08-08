@@ -66,7 +66,7 @@ inline function skipped() {
 			sel.removeAllRanges();
 			sel.addRange(range);
 		}
-		chrome.Runtime.sendMessage(msg, flush);
+		chrome.Runtime.sendMessage(msg).then(flush).catchError(flush);
 	}
 	view.oncontextmenu = function( e : MouseEvent ) {
 		var sel = document.getSelection();

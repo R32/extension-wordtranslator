@@ -12,46 +12,24 @@ var FDOUT = TOUT.tagName != "TEXTAREA" ? "innerText" : "value";
 
 var tmp_ens : String;
 var lst_ens : String;
-inline function ens_add(ens) tmp_ens = ens;
-inline function ens_clear() tmp_ens = null;
+inline function ens_push(ens) tmp_ens = ens;
 inline function ens_commit() lst_ens = tmp_ens;
 inline function ens_diff(ens) return lst_ens != ens;
 
 var lazy_reply : Dynamic->Void;
-function flush(v) {
+
+function flush( v ) {
+	if (lazy_reply == null)
+		return;
+	lazy_reply(v);
+	lazy_reply = null;
 	ens_commit();
-	if (NOTNULL(lazy_reply)) {
-		lazy_reply(v);
-		lazy_reply = null;
-	}
 }
-
-var tid = -1;
-function polling( lvl : Int ) {
-	tid = -1;
-	var cur = (TOUT : Dynamic)[cast FDOUT];
-	if (lvl < 0) {
-		ens_clear();
-		cur = Timeout.locale();
-	} else {
-		var i = 0;
-		var len = cur.length;
-		while (i < len && cur.fastCodeAt(i) == " ".code)
-			i++;
-		if (i == len || cur.endsWith("...")) {
-			tid = setTimeout(polling, 600, lvl - 1);
-			return;
-		}
-	}
-	flush(cur);
-}
-
-inline var DEFAULT_LEVEL = 2;
 
 /*
  * 0(MIN), 1, (2), 3, 4(MAX)
  */
-var level = DEFAULT_LEVEL;
+var level = 2;
 
 var paste = new js.html.InputEvent("input", {bubbles : true});
 
@@ -60,14 +38,12 @@ var sound : Bool;
 function run( ens : String ) : Bool {
 	var diff = ens_diff(ens);
 	if (diff) {
-		ens_add(ens);
+		ens_push(ens);
 		sound = detects(ens);
 		(TIN : Dynamic)[cast FDIN] = ens;
 		TIN.dispatchEvent(paste);
-		if (tid >= 0)
-			clearTimeout(tid);
-		tid = setTimeout(polling, 500, 10);
 	} else {
+		lazy_reply(null);
 		lazy_reply = null;
 	}
 	LOG("disable : " + (level > 0xFF) + ", level : " + (level & 0xFF) + ", sound : " + sound + ", diff : " + ens_diff(ens));
@@ -111,7 +87,7 @@ function main() {
 		if (NOTNULL(res[KVOICES]))
 			level = toInt(res[KVOICES]);
 		if (NOTNULL(res[KVSPEED]))
-			TPLAY.dispatchEvent(new js.html.CustomEvent("playbackRate", {detail : toInt(res[KVSPEED])}));
+			TPLAY.dispatchEvent(new js.html.CustomEvent(CE_RATE, {detail : toInt(res[KVSPEED])}));
 	});
 	chrome.Runtime.onMessage.addListener(function( msg : Message, _, ?reply : Dynamic->Void ) {
 		LOG(msg);
@@ -129,9 +105,13 @@ function main() {
 			if (type == KVOICES) {
 				level = value;
 			} else if (type == KVSPEED) {
-				TPLAY.dispatchEvent(new js.html.CustomEvent("playbackRate", {detail : value}));
+				TPLAY.dispatchEvent(new js.html.CustomEvent(CE_RATE, {detail : value}));
 			}
 		}
 		return false;
+	});
+
+	TOUT.addEventListener(CE_FINISH, function() {
+		flush(js.Lib.nativeThis[cast FDOUT]);
 	});
 }
