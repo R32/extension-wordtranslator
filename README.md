@@ -30,7 +30,7 @@
 
 ### 安装
 
-目前最新版本是 `1.2.7 @c3e737c`, Firefox 或 EDGE 可能没更新.
+目前最新版本是 `1.3.1 @aa2d20d`, Firefox 或 EDGE 可能没更新.
 
 - [**Firefox 浏览器**](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词) 注意安装完成后可能 **需要** 进入此插件的管理面板, 在 `权限` 选项卡中把 `访问您在所有网站的数据` 勾上
 
@@ -58,7 +58,7 @@
 启用             [x]
 重定向 GoogleAPI [ ]
 发音     (0-2-4-8-~)
-速度     (30----100)  #实验性
+速度     (30----100)
 ```
 
 **重点:** 发音 **不是** 用于音量, 而用于表示单词数量, 其范围为 `[0, 2, 4, 8, 无限]`,
@@ -71,7 +71,7 @@
 - 重定向了 googleapi 的脚本, 图片, 以及字体, 用于更快地打开一些网页, 例如 : stackoverflow
 
 重定向的规则可参见 [`redirect-googleapi.json`](build/redirect-googleapi.json),
-如果你是以"文件的形式"安装的此插件, 可以自己修改规则.
+如果以 "文件的形式" 安装的此插件, 那么可以自己修改规则.
 
 ### 常见问题
 
@@ -88,9 +88,10 @@
 - 2026-X-XX:
 
   - 添加了 "速度" 选项用于控制发音速度. (使用了 hook `HTMLAudioElement.prototype.play` 的方式调整 `.playbackRate` 以控制速度)
-  - 修复了多次点击导致页面接收不到响应 `24c9e80`
-  - 修复了由于发音按钮错误导致了响应中断 `a8316d5`
-  - 版本提高到了 `1.2.9`
+  - [24c9e80] : 修复了多次点击导致页面接收不到响应
+  - [a8316d5] : 修复了由于发音按钮错误导致了响应中断
+  - [aa2d20d] : 使用了原网页 `sj_evt.bind("tt.domStable")` 的方式来代替 "setTimeout 轮询", 以尝试修复 "The page keeping the extension port is moved into back/forward cache, so the message channel is closed"
+  - 版本提高到了 `1.3.1`
 
 - 2025-6-30:
 
