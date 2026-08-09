@@ -10,6 +10,7 @@ function flush(v) {
 	lazy_reply(v);
 	lazy_reply = null;
 	lst_ens = tmp_ens;
+	tmp_ens = null;
 }
 var sound = null;
 function run(ens) {
@@ -20,7 +21,12 @@ function run(ens) {
 		TIN[FDIN] = ens;
 		TIN.dispatchEvent(paste);
 	} else {
-		lazy_reply(null);
+		if(tmp_ens == null) {
+			tmp_ens = TOUT[FDOUT];
+			lazy_reply(tmp_ens);
+		} else {
+			lazy_reply(null);
+		}
 		lazy_reply = null;
 	}
 	if(sound && level < 255 && navigator.userActivation.hasBeenActive) {
@@ -67,10 +73,11 @@ function main() {
 		switch(msg[0]) {
 		case 1:
 			if(lazy_reply) {
+				tmp_ens = null;
 				lazy_reply(null);
 			}
 			lazy_reply = reply;
-			return run(msg[1]);
+			return run(msg[1].trim());
 		case 2:
 			let args = msg[1].split(":");
 			let type = args[0];

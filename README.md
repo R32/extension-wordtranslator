@@ -88,9 +88,9 @@
 - 2026-X-XX:
 
   - 添加了 "速度" 选项用于控制发音速度. (使用了 hook `HTMLAudioElement.prototype.play` 的方式调整 `.playbackRate` 以控制速度)
-  - [24c9e80] : 修复了多次点击导致页面接收不到响应
-  - [a8316d5] : 修复了由于发音按钮错误导致了响应中断
-  - [aa2d20d] : 使用了原网页 `sj_evt.bind("tt.domStable")` 的方式来代替 "setTimeout 轮询", 以尝试修复 "The page keeping the extension port is moved into back/forward cache, so the message channel is closed"
+  - 24c9e80 : 修复了多次点击导致页面接收不到响应
+  - a8316d5 : 修复了由于发音按钮错误导致了响应中断
+  - aa2d20d : 使用了原网页 `sj_evt.bind("tt.domStable")` 的方式来代替 "setTimeout 轮询"
   - 版本提高到了 `1.3.1`
 
 - 2025-6-30:

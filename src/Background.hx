@@ -29,6 +29,12 @@ function flush( v : Dynamic ) {
 	}
 }
 
+function flusherr( v : Dynamic ) {
+	if (v && !(v is String))
+		v = v.toString();
+	flush(v);
+}
+
 function run( msg : Message ) {
 	if (tabid < 0) {
 		query(msg);

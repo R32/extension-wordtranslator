@@ -13,6 +13,7 @@ var FDOUT = TOUT.tagName != "TEXTAREA" ? "innerText" : "value";
 var tmp_ens : String;
 var lst_ens : String;
 inline function ens_push(ens) tmp_ens = ens;
+inline function ens_clear() tmp_ens = null;
 inline function ens_commit() lst_ens = tmp_ens;
 inline function ens_diff(ens) return lst_ens != ens;
 
@@ -24,6 +25,7 @@ function flush( v ) {
 	lazy_reply(v);
 	lazy_reply = null;
 	ens_commit();
+	ens_clear();
 }
 
 /*
@@ -41,9 +43,17 @@ function run( ens : String ) : Bool {
 		ens_push(ens);
 		sound = detects(ens);
 		(TIN : Dynamic)[cast FDIN] = ens;
+		// BEWARE : "CE_FINISH" will not be triggered if "ens" equals tta_input_ta.innerText.
 		TIN.dispatchEvent(paste);
 	} else {
-		lazy_reply(null);
+		// when background.js receives an error, there is a chance to respond with the previous value.
+		// This handles the case : "The page keeping the extension port is moved into back/forward cache, so the message channel is closed"
+		if (tmp_ens == null) {
+			tmp_ens = (TOUT : Dynamic)[cast FDOUT];
+			lazy_reply(tmp_ens);
+		} else {
+			lazy_reply(null);
+		}
 		lazy_reply = null;
 	}
 	LOG("disable : " + (level > 0xFF) + ", level : " + (level & 0xFF) + ", sound : " + sound + ", diff : " + ens_diff(ens));
@@ -94,10 +104,11 @@ function main() {
 		switch (msg.kind) {
 		case Request:
 			if (NOTNULL(lazy_reply)) {
+				ens_clear();
 				lazy_reply(null);
 			}
 			lazy_reply = reply;
-			return run(msg.value);
+			return run(ESXTools.trim(msg.value)); // Trim as the original page does
 		case Control:
 			var args = msg.value.split(":");
 			var type = args[0];
