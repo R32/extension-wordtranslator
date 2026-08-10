@@ -22,14 +22,14 @@
 --js build/js/content-script.js
 
 --next
--main HookBingTranslator
---js build/js/hook-bingtranslator.js
---macro maux.ModuleLevel.strip(['HookBingTranslator'])
+-main HookMain
+--js build/js/hook-main.js
+--macro maux.ModuleLevel.strip(['HookMain'])
 
 --next
--main HookBingAudioSpeed
---js build/js/hook-bingaudiospeed.js
---macro maux.ModuleLevel.strip(['HookBingAudioSpeed'])
+-main HookShims
+--js build/js/hook-shims.js
+--macro maux.ModuleLevel.strip(['HookShims'])
 
 --next
 -main Popup

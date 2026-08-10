@@ -90,8 +90,8 @@ function main() {
 		if(tabid == t.tabId) {
 			while(acquired > 0) flush(null);
 		}
-		exec(target,"js/hook-bingaudiospeed.js","MAIN");
-		exec(target,"js/hook-bingtranslator.js");
+		exec(target,"js/hook-shims.js","MAIN");
+		exec(target,"js/hook-main.js");
 	});
 	chrome.tabs.onRemoved.addListener(function(id,_) {
 		if(id == tabid) {

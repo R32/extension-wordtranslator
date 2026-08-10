@@ -14,8 +14,8 @@ HAXEFLAGS := -cp $(SRC)\
 	--macro exclude\(\'haxe.iterators.ArrayIterator\'\)
 
 BG        := $(OUT)/js/background.js
-HOOK1     := $(OUT)/js/hook-bingaudiospeed.js
-HOOK2     := $(OUT)/js/hook-bingtranslator.js
+HOOK_SHIMS:= $(OUT)/js/hook-shims.js
+HOOK_MAIN := $(OUT)/js/hook-main.js
 CONTENT   := $(OUT)/js/content-script.js
 # popup.html
 POPUPJS   := $(OUT)/js/popup.js
@@ -27,7 +27,7 @@ COMMON    := $(COMMON:%=$(SRC)/%.hx)
 
 all: bg content hook popup
 bg: $(BG)
-hook: $(HOOK1) $(HOOK2)
+hook: $(HOOK_SHIMS) $(HOOK_MAIN)
 popup: $(POPUPJS) $(POPUPCSS)
 content: $(CONTENT)
 hss: $(POPUPCSS)
@@ -40,11 +40,11 @@ clean:
 $(BG): $(SRC)/Background.hx $(COMMON)
 	haxe $(HAXEFLAGS) -D js-global=globalThis --js $@ --main Background --macro maux.ModuleLevel.strip\([\'Background\']\)
 
-$(HOOK1): $(SRC)/HookBingAudioSpeed.hx $(COMMON)
-	haxe $(HAXEFLAGS) --js $@ --main HookBingAudioSpeed --macro maux.ModuleLevel.strip\([\'HookBingAudioSpeed\']\)
+$(HOOK_SHIMS): $(SRC)/HookShims.hx $(COMMON)
+	haxe $(HAXEFLAGS) --js $@ --main HookShims --macro maux.ModuleLevel.strip\([\'HookShims\']\)
 
-$(HOOK2): $(SRC)/HookBingTranslator.hx $(COMMON)
-	haxe $(HAXEFLAGS) --js $@ --main HookBingTranslator --macro maux.ModuleLevel.strip\([\'HookBingTranslator\']\)
+$(HOOK_MAIN): $(SRC)/HookMain.hx $(COMMON)
+	haxe $(HAXEFLAGS) --js $@ --main HookMain --macro maux.ModuleLevel.strip\([\'HookMain\']\)
 
 $(CONTENT): $(SRC)/ContentScript.hx $(COMMON)
 	haxe $(HAXEFLAGS) --js $@ --main ContentScript
