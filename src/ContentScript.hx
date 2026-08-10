@@ -99,7 +99,7 @@ inline function skipped() {
 		var sel = document.getSelection();
 		if (sel.isCollapsed || hitself(sel))
 			return;
-		var value = sel.toString().trimStart();
+		var value = sel.toString().trim(); // Trim as the translation page does
 		if (value == "" || msg.value == value)
 			return;
 		display(view) = CSS_INLINE_BLOCK;

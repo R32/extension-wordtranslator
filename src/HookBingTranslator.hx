@@ -7,58 +7,53 @@ import js.html.TextAreaElement;
 var TIN = document.getElementById("tta_input_ta");
 var TOUT = document.getElementById("tta_output_ta");
 var TPLAY = document.getElementById("tta_playiconsrc");
-var FDIN = TIN.tagName != "TEXTAREA" ? "innerText" : "value";
-var FDOUT = TOUT.tagName != "TEXTAREA" ? "innerText" : "value";
 
-var tmp_ens : String;
 var lst_ens : String;
-inline function ens_push(ens) tmp_ens = ens;
-inline function ens_clear() tmp_ens = null;
-inline function ens_commit() lst_ens = tmp_ens;
-inline function ens_diff(ens) return lst_ens != ens;
 
-var lazy_reply : Dynamic->Void;
-
-function flush( v ) {
-	if (lazy_reply == null)
-		return;
-	lazy_reply(v);
-	lazy_reply = null;
-	ens_commit();
-	ens_clear();
-}
+var lst_reply : Dynamic->Void;
 
 /*
  * 0(MIN), 1, (2), 3, 4(MAX)
  */
 var level = 2;
 
+var sound : Bool = js.Lib.undefined;
+
 var paste = new js.html.InputEvent("input", {bubbles : true});
 
-var sound : Bool;
+var click = new js.html.MouseEvent("click");
+
+function flush( v ) {
+	LOG("(flush) - lst_reply : " + (lst_reply != null) + ", v : " + v);
+	if (lst_reply == null)
+		return;
+	lst_reply(v);
+	lst_reply = null;
+}
 
 function run( ens : String ) : Bool {
-	var diff = ens_diff(ens);
+	var diff = lst_ens != ens;
+	LOG("( run ) - diff : " + diff);
 	if (diff) {
-		ens_push(ens);
+		lst_ens = ens;
+		text(TIN) = ens;
 		sound = detects(ens);
-		(TIN : Dynamic)[cast FDIN] = ens;
-		// BEWARE : "CE_FINISH" will not be triggered if "ens" equals tta_input_ta.innerText.
 		TIN.dispatchEvent(paste);
+		// BEWARE : "CE_FINISH" will not be triggered if "ens" equals tta_input_ta.innerText.
 	} else {
-		// when background.js receives an error, there is a chance to respond with the previous value.
-		// This handles the case : "The page keeping the extension port is moved into back/forward cache, so the message channel is closed"
-		if (tmp_ens == null) {
-			tmp_ens = (TOUT : Dynamic)[cast FDOUT];
-			lazy_reply(tmp_ens);
-		} else {
-			lazy_reply(null);
+		// When the translation page suddenly refreshes, the execution here will be interrupted,
+		// which causes background.js to receive an error.
+		// The variable 'sound' is just used to detect if the page has been refreshed,
+		// giving it a chance to respond with the previous value.
+		var s = text(TOUT);
+		if (js.Syntax.strictEq(sound, js.Lib.undefined) || s.endsWith(" ...")) {
+			lst_reply(s);
+			sound = detects(ens);
 		}
-		lazy_reply = null;
+		lst_reply = null;
 	}
-	LOG("disable : " + (level > 0xFF) + ", level : " + (level & 0xFF) + ", sound : " + sound + ", diff : " + ens_diff(ens));
 	if (sound && level < 0xFF && (navigator : Dynamic).userActivation.hasBeenActive)
-		TPLAY.click();
+		TPLAY.dispatchEvent(click);
 	return diff;
 }
 
@@ -72,11 +67,11 @@ function detects( ens : String ) {
 	var len = ens.length;
 	var count = (1 << n) - 1; // spaces count
 	// fast trimStart
-	while (i < len && ens.fastCodeAt(i) == " ".code)
-		i++;
+	//while (i < len && ens.fastCodeAt(i) == " ".code)
+	//	i++;
 	// fast trimEnd
-	while (len > i && ens.fastCodeAt(len - 1) == " ".code)
-		len--;
+	//while (len > i && ens.fastCodeAt(len - 1) == " ".code)
+	//	len--;
 	// characters count for chinese, not tested yet
 	if (i < len && ens.fastCodeAt(i) > 255) {
 		return len - i <= count + 1;
@@ -100,15 +95,14 @@ function main() {
 			TPLAY.dispatchEvent(new js.html.CustomEvent(CE_RATE, {detail : toInt(res[KVSPEED])}));
 	});
 	chrome.Runtime.onMessage.addListener(function( msg : Message, _, ?reply : Dynamic->Void ) {
-		LOG(msg);
+		LOG("(ONMSG) - msg : " + msg.toString() + ", lst_reply : " + (lst_reply != null));
 		switch (msg.kind) {
 		case Request:
-			if (NOTNULL(lazy_reply)) {
-				ens_clear();
-				lazy_reply(null);
+			if (NOTNULL(lst_reply)) {
+				lst_reply(null);
 			}
-			lazy_reply = reply;
-			return run(ESXTools.trim(msg.value)); // Trim as the original page does
+			lst_reply = reply;
+			return run(msg.value);
 		case Control:
 			var args = msg.value.split(":");
 			var type = args[0];
@@ -123,6 +117,16 @@ function main() {
 	});
 
 	TOUT.addEventListener(CE_FINISH, function() {
-		flush(js.Lib.nativeThis[cast FDOUT]);
+		LOG("(ONFIN) - output.value : " + text(nativeThis));
+		flush(text(nativeThis));
 	});
+
+	window.onpagehide = function( e : js.html.PageTransitionEvent ) {
+		LOG("(**ONPAGEHIDE**) - persisted : " + e.persisted);
+		if (NOTNULL(lst_reply))
+			lst_reply("[" + Wrong.locale() + "]");
+	}
+	// init for refresh
+	lst_ens = text(TIN);
+	LOG("(main ) - lst_ens : '" + lst_ens + "'");
 }

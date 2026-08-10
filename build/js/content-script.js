@@ -83,7 +83,7 @@ function main() {
 		if(sel.isCollapsed || sel.anchorNode.parentNode == view) {
 			return;
 		}
-		let value = sel.toString().trimStart();
+		let value = sel.toString().trim();
 		if(value == "" || msg[1] == value) {
 			return;
 		}

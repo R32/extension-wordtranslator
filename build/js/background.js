@@ -6,9 +6,9 @@ function flush(v) {
 	if(acquired > 0) {
 		acquired--;
 	}
-	if(lazy_reply && acquired == 0) {
-		lazy_reply(v);
-		lazy_reply = null;
+	if(lst_reply && acquired == 0) {
+		lst_reply(v);
+		lst_reply = null;
 	}
 }
 function run(msg) {
@@ -45,10 +45,10 @@ function main() {
 		switch(msg[0]) {
 		case 1:
 			acquired++;
-			if(lazy_reply) {
-				lazy_reply(null);
+			if(lst_reply) {
+				lst_reply(null);
 			}
-			lazy_reply = reply;
+			lst_reply = reply;
 			run(msg);
 			return true;
 		case 2:
@@ -104,6 +104,6 @@ function main() {
 var tabid = -1;
 var acquired = 0;
 var enable = true;
-var lazy_reply = null;
+var lst_reply = null;
 main();
 })(globalThis);

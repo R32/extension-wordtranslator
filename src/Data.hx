@@ -9,6 +9,7 @@ extern abstract Message(Array<Dynamic>) {
 	var kind(get, set) : Kind;
 	var value(get, set) : String;
 	inline function new( kind : Kind, value : String ) this = [kind, value];
+	inline function toString() return "[" + this.join(", ") + "]";
 	private inline function get_kind() : Kind return this[0];
 	private inline function set_kind( k : Kind ) : Kind return this[0] = k;
 	private inline function get_value() : String return this[1];

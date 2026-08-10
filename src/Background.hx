@@ -18,14 +18,14 @@ var acquired = 0;  // the count of chrome.Tabs.sendMessage(...)
 
 var enable = true; // Storage.local
 
-var lazy_reply : Dynamic->Void = null;
+var lst_reply : Dynamic->Void = null;
 
 function flush( v : Dynamic ) {
 	if (acquired > 0)
 		acquired--;
-	if (NOTNULL(lazy_reply) && acquired == 0) {
-		lazy_reply(v);
-		lazy_reply = null;
+	if (NOTNULL(lst_reply) && acquired == 0) {
+		lst_reply(v);
+		lst_reply = null;
 	}
 }
 
@@ -71,15 +71,15 @@ function main() {
 	});
 
 	chrome.Runtime.onMessage.addListener(function( msg : Message, _, ?reply : Dynamic->Void ) {
-		LOG(msg);
+		LOG("(ONMSG) - msg : " + msg.toString());
 		switch (msg.kind) {
 		case Request:
 			acquired++;
-			if (NOTNULL(lazy_reply)) {
+			if (NOTNULL(lst_reply)) {
 				// Discard the previous request, but be careful — the previous promise from Tabs.SendMessage(...) still exists and cannot be canceled.
-				lazy_reply(null);
+				lst_reply(null);
 			}
-			lazy_reply = reply;
+			lst_reply = reply;
 			run(msg);
 			return true; // keep the connection alive
 		case Control:
