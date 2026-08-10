@@ -9,14 +9,12 @@ var TOUT = document.getElementById("tta_output_ta");
 var finish = new js.html.CustomEvent(CE_FINISH);
 var irate = 100;
 
+function NOP(e){}
+
 function rate_play() {
-	var frate = irate / 100.;
-	nativeThis.playbackRate = frate;
-	var promise : Promise<Any> = nativeThis.origin_play();
+	nativeThis.playbackRate = irate / 100.;
 	// Browsers released before 2019 may not return a value from play()
-	if ((promise : Dynamic)) {
-		promise.catchError((console : Dynamic).log);
-	}
+	(nativeThis.origin_play() : Promise<Any>)?.catchError(NOP);
 }
 
 inline function rate_attach() {
