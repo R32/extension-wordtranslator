@@ -17,9 +17,8 @@ function run(ens) {
 		sound = detects(ens);
 		TIN.dispatchEvent(paste);
 	} else {
-		let s = TOUT.innerText;
-		if(((sound) === undefined) || s.endsWith(" ...")) {
-			lst_reply(s);
+		if(((sound) === undefined) && !TOUT.innerText.endsWith(" ...")) {
+			lst_reply(TOUT.innerText);
 			sound = detects(ens);
 		}
 		lst_reply = null;

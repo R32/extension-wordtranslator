@@ -45,9 +45,8 @@ function run( ens : String ) : Bool {
 		// which causes background.js to receive an error.
 		// The variable 'sound' is just used to detect if the page has been refreshed,
 		// giving it a chance to respond with the previous value.
-		var s = text(TOUT);
-		if (js.Syntax.strictEq(sound, js.Lib.undefined) || s.endsWith(" ...")) {
-			lst_reply(s);
+		if (js.Syntax.strictEq(sound, js.Lib.undefined) && !text(TOUT).endsWith(" ...")) {
+			lst_reply(text(TOUT));
 			sound = detects(ens);
 		}
 		lst_reply = null;
