@@ -71,9 +71,8 @@ function main() {
 	});
 
 	chrome.Runtime.onMessage.addListener(function( msg : Message, _, ?reply : Dynamic->Void ) {
-		LOG("(ONMSG) - msg : " + msg.toString());
-		switch (msg.kind) {
-		case Request:
+		LOG("(ONMSG) - msg : " + msg);
+		if (!msg.is_control()) {
 			acquired++;
 			if (NOTNULL(lst_reply)) {
 				// Discard the previous request, but be careful — the previous promise from Tabs.SendMessage(...) still exists and cannot be canceled.
@@ -82,8 +81,8 @@ function main() {
 			lst_reply = reply;
 			run(msg);
 			return true; // keep the connection alive
-		case Control:
-			var args = msg.value.split(":");
+		} else {
+			var args = msg.ctlvalue().split(":");
 			switch (args[0]) {
 			case KDISBLED:
 				enable = args[1] != "true";
@@ -91,8 +90,8 @@ function main() {
 				chrome.Tabs.sendMessage(tabid, msg).catchError(NOP);
 			default:
 			}
+			return false;
 		}
-		return false;
 	});
 
 	chrome.WebNavigation.onDOMContentLoaded.addListener(function(t) {

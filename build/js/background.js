@@ -42,8 +42,7 @@ function main() {
 		enable = !res["disabled"];
 	});
 	chrome.runtime.onMessage.addListener(function(msg,_,reply) {
-		switch(msg[0]) {
-		case 1:
+		if(msg.charCodeAt(0) != 127) {
 			acquired++;
 			if(lst_reply) {
 				lst_reply(null);
@@ -51,8 +50,8 @@ function main() {
 			lst_reply = reply;
 			run(msg);
 			return true;
-		case 2:
-			let args = msg[1].split(":");
+		} else {
+			let args = msg.substring(1).split(":");
 			switch(args[0]) {
 			case "disabled":
 				enable = args[1] != "true";
@@ -64,9 +63,8 @@ function main() {
 				break;
 			default:
 			}
-			break;
+			return false;
 		}
-		return false;
 	});
 	chrome.webNavigation.onDOMContentLoaded.addListener(function(t) {
 		let ishook = t.url.substring(8,32).indexOf("bing.com/translator") >= 0;

@@ -30,7 +30,7 @@
 
 ### 安装
 
-目前最新版本是 `1.3.1 @6ce1ae1`, Firefox 或 EDGE 可能没更新.
+目前最新版本是 `1.3.1 @eec9283`, Firefox 或 EDGE 可能没更新.
 
 - [**Firefox 浏览器**](https://addons.mozilla.org/zh-CN/firefox/addon/羊毛查词) 注意安装完成后可能 **需要** 进入此插件的管理面板, 在 `权限` 选项卡中把 `访问您在所有网站的数据` 勾上
 

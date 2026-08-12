@@ -63,15 +63,14 @@ function main() {
 		}
 	});
 	chrome.runtime.onMessage.addListener(function(msg,_,reply) {
-		switch(msg[0]) {
-		case 1:
+		if(msg.charCodeAt(0) != 127) {
 			if(lst_reply) {
 				lst_reply(null);
 			}
 			lst_reply = reply;
-			return run(msg[1]);
-		case 2:
-			let args = msg[1].split(":");
+			return run(msg);
+		} else {
+			let args = msg.substring(1).split(":");
 			let type = args[0];
 			let value = (args[1] | 0);
 			if(type == "voices") {
@@ -79,9 +78,8 @@ function main() {
 			} else if(type == "vspeed") {
 				TPLAY.dispatchEvent(new CustomEvent("wm.rate",{ detail : value}));
 			}
-			break;
+			return false;
 		}
-		return false;
 	});
 	TOUT.addEventListener("wm.finish",function() {
 		flush(this.innerText);

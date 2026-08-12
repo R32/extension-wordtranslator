@@ -96,15 +96,14 @@ function main() {
 	});
 	chrome.Runtime.onMessage.addListener(function( msg : Message, _, ?reply : Dynamic->Void ) {
 		LOG("(ONMSG) - msg : " + msg.toString() + ", lst_reply : " + (lst_reply != null));
-		switch (msg.kind) {
-		case Request:
+		if (!msg.is_control()) {
 			if (NOTNULL(lst_reply)) {
 				lst_reply(null);
 			}
 			lst_reply = reply;
-			return run(msg.value);
-		case Control:
-			var args = msg.value.split(":");
+			return run(msg);
+		} else {
+			var args = msg.ctlvalue().split(":");
 			var type = args[0];
 			var value = toInt(args[1]);
 			if (type == KVOICES) {
@@ -112,8 +111,8 @@ function main() {
 			} else if (type == KVSPEED) {
 				TPLAY.dispatchEvent(new js.html.CustomEvent(CE_RATE, {detail : value}));
 			}
+			return false;
 		}
-		return false;
 	});
 
 	TOUT.addEventListener(CE_FINISH, function() {

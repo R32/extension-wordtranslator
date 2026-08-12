@@ -9,7 +9,7 @@ var TOUT = document.getElementById("tta_output_ta");
 var finish = new js.html.CustomEvent(CE_FINISH);
 var irate = 100;
 
-function NOP(e){}
+function NOP(_){}
 
 function rate_play() {
 	nativeThis.playbackRate = irate / 100.;

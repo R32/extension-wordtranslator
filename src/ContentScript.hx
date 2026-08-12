@@ -16,7 +16,7 @@ inline function skipped() {
 		return;
 	var id = "yangmaowords";
 	var pos = {x : 0, y : 0};
-	var msg = new Message(Request, "");
+	var msg : Message = null;
 	var range : js.html.Range = null;
 	var view = document.getElementById(id);
 	if (NOTNULL(view))
@@ -100,14 +100,14 @@ inline function skipped() {
 		if (sel.isCollapsed || hitself(sel))
 			return;
 		var value = sel.toString().trim(); // Trim as the translation page does
-		if (value == "" || msg.value == value)
+		if (value == "" || msg == value)
 			return;
 		display(view) = CSS_INLINE_BLOCK;
 		range = sel.getRangeAt(0);
 		var rect = range.getClientRects()[0];
 		view.style.left = rect.left + window.pageXOffset + "px";
 		view.style.top = Math.max(rect.top + window.pageYOffset - view.offsetHeight - 2, 0) + "px";
-		msg.value = value;
+		msg = Message.normal(value);
 	};
 	document.body.appendChild(view);
 }

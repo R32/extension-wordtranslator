@@ -11,7 +11,7 @@ function main() {
 	let pos_y;
 	let pos_x = 0;
 	pos_y = 0;
-	let msg = [1,""];
+	let msg = null;
 	let range = null;
 	let view = document.getElementById("yangmaowords");
 	if(view) {
@@ -84,7 +84,7 @@ function main() {
 			return;
 		}
 		let value = sel.toString().trim();
-		if(value == "" || msg[1] == value) {
+		if(value == "" || msg == value) {
 			return;
 		}
 		view.style.display = "inline-block";
@@ -92,7 +92,7 @@ function main() {
 		let rect = range.getClientRects()[0];
 		view.style.left = rect.left + window.pageXOffset + "px";
 		view.style.top = Math.max(rect.top + window.pageYOffset - view.offsetHeight - 2,0) + "px";
-		msg[1] = value;
+		msg = value;
 	};
 	document.body.appendChild(view);
 }

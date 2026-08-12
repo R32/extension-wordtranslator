@@ -35,7 +35,7 @@ function update(label,checked,extra) {
 		attrset(ui_sound,"disabled",disabled);
 		attrset(ui_redirect,"disabled",disabled);
 		chrome.storage.local.set({"disabled" : disabled},function() {
-			chrome.runtime.sendMessage([2,"disabled" + ":" + (disabled == null ? "null" : "" + disabled)]).catch(NOP);
+			chrome.runtime.sendMessage("" + ("disabled" + ":" + (disabled == null ? "null" : "" + disabled))).catch(NOP);
 		});
 		if(disabled) {
 			set_redirect(false);
@@ -55,7 +55,7 @@ function update(label,checked,extra) {
 		let obj = { };
 		obj[key] = extra;
 		chrome.storage.local.set(obj,function() {
-			chrome.runtime.sendMessage([2,key + ":" + extra]).catch(NOP);
+			chrome.runtime.sendMessage("" + (key + ":" + extra)).catch(NOP);
 		});
 		break;
 	default:

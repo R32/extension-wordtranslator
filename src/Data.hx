@@ -1,19 +1,14 @@
 package;
 
-extern private enum abstract Kind(Int) to Int {
-	var Request = 1;
-	var Control = 2;
-}
+extern abstract Message(String) to String {
 
-extern abstract Message(Array<Dynamic>) {
-	var kind(get, set) : Kind;
-	var value(get, set) : String;
-	inline function new( kind : Kind, value : String ) this = [kind, value];
-	inline function toString() return "[" + this.join(", ") + "]";
-	private inline function get_kind() : Kind return this[0];
-	private inline function set_kind( k : Kind ) : Kind return this[0] = k;
-	private inline function get_value() : String return this[1];
-	private inline function set_value( v : String ) : String return this[1] = v;
+	private inline function new( msg : String ) this = msg;
+
+	inline function is_control() : Bool return StringTools.fastCodeAt(this, 0) == 0x7F;
+	inline function ctlvalue() : String return this.substring(1);
+
+	static inline function normal( msg : String ) return new Message(msg);
+	static inline function control( msg : String ) return new Message("\x7F" + msg);
 }
 
 extern enum abstract LocaleString(String) to String {

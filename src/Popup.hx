@@ -47,7 +47,7 @@ function update( label : DOMElement, checked : Bool, ?extra : String ) {
 		ui_disabled(ui_sound, disabled);
 		ui_disabled(ui_redirect, disabled);
 		Storage.local.set(KDISBLED.combine(disabled), function() {
-			chrome.Runtime.sendMessage(new Message(Control, KDISBLED + ":" + disabled)).catchError(NOP);
+			chrome.Runtime.sendMessage(Message.control(KDISBLED + ":" + disabled)).catchError(NOP);
 		});
 		// update googleapi redirecting
 		if (disabled) {
@@ -66,7 +66,7 @@ function update( label : DOMElement, checked : Bool, ?extra : String ) {
 		var obj = new haxe.DynamicAccess<String>();
 		obj[key] = extra;
 		Storage.local.set(obj, function() {
-			chrome.Runtime.sendMessage(new Message(Control, key + ":" + extra)).catchError(NOP);
+			chrome.Runtime.sendMessage(Message.control(key + ":" + extra)).catchError(NOP);
 		});
 	default:
 	}
